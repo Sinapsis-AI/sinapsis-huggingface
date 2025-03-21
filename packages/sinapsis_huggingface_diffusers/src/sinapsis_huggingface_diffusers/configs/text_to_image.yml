@@ -1,0 +1,26 @@
+agent:
+  name: my_test_agent
+  description: "Diffusers text to image generation"
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: TextToImageDiffusers
+    class_name: TextToImageDiffusers
+    template_input: InputTemplate
+    attributes:
+      model_path: stable-diffusion-v1-5/stable-diffusion-v1-5
+      device: cuda
+      torch_dtype: "float16"
+      enable_model_cpu_offload: false
+      overwrite_images: true
+      generation_params:
+        prompt: "A majestic castle on top of a mountain, surrounded by clouds during sunset"
+        height: 1024
+        width: 1024
+        num_inference_steps: 50
+        guidance_scale: 7.5
+        negative_prompt: "low quality, blurry, distorted"
+        num_images_per_prompt: 1

@@ -1,0 +1,34 @@
+[project]
+name = "sinapsis-huggingface-transformers"
+version = "0.1.0"
+description = "Templates for HuggingFace Transformers, supporting automatic-speech-recognition, text-to-speech, translation and summarization templates "
+authors = [
+    {name = "SinapsisAI", email = "dev@sinapsis-ai.com"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = [
+    "accelerate>=1.1.1",
+    "clang>=17.0.6",
+    "flax>=0.7.1",
+    "peft>=0.14.0",
+    "sentencepiece>=0.2.0",
+    "sinapsis>=0.1.1",
+    "soundfile>=0.13.1",
+    "torch>=2.5.1",
+    "transformers>=4.47.1",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[[tool.uv.index]]
+url = "https://pypi.sinapsis.tech/"
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-huggingface.git"

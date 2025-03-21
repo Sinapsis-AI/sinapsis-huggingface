@@ -1,0 +1,30 @@
+agent:
+  name: my_agent_test
+  description: "Grounding DINO image classification"
+
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: { }
+
+  - template_name: GroundingDINOClassification
+    class_name: GroundingDINOClassification
+    template_input: InputTemplate
+    attributes:
+      model_path: IDEA-Research/grounding-dino-base
+      inference_mode: zero_shot
+      device: cuda
+      threshold: 0.2
+      text_threshold: 0.3
+      text_input: a person. a dog. a cat.
+      top_k: 1
+
+  - template_name: LabelDrawer
+    class_name: LabelDrawer
+    template_input: GroundingDINOClassification
+    attributes:
+      overwrite: true
+      randomized_color: false
+      draw_classification_label: true
+      text_box_to_border_offset: 0.05

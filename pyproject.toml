@@ -1,0 +1,93 @@
+[project]
+name = "sinapsis-huggingface"
+version = "0.1.0"
+description = "Package for HuggingFace-based templates"
+authors = [
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = [
+    "sinapsis>=0.1.1",
+]
+
+[project.optional-dependencies]
+gradio-app = [
+    "gradio==5.3.0",
+    "sinapsis-data-readers[opencv]>=0.1.0",
+    "sinapsis-data-visualization[visualization-matplotlib]>=0.1.0",
+    "sinapsis-huggingface-diffusers[all]",
+    "sinapsis-huggingface-grounding-dino",
+    "sinapsis-ultralytics>=0.1.0",
+]
+
+
+all = [
+    "sinapsis-huggingface-diffusers[all]",
+    "sinapsis-huggingface-embeddings",
+    "sinapsis-huggingface-grounding-dino",
+    "sinapsis-huggingface-transformers",
+    "sinapsis-huggingface[gradio-app,sinapsis-data-writers]",
+]
+sinapsis-data-writers = [
+    "sinapsis-data-writers>=0.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.3",
+    "pre-commit>=4.0.1",
+]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+exclude = ["packages/*.egg-info"]
+
+[tool.setuptools]
+packages = { find = { where = ["packages"] } }
+
+[tool.uv.sources]
+sinapsis-huggingface-transformers= {workspace = true}
+sinapsis-huggingface-embeddings = {workspace = true}
+sinapsis-huggingface-grounding-dino = { workspace = true }
+sinapsis-huggingface-diffusers = { workspace = true }
+sinapsis-huggingface = { workspace = true }
+
+[[tool.uv.index]]
+name = "sinapsis"
+url = "https://pypi.sinapsis.tech/"
+
+[tool.ruff]
+lint.select = [
+    "ARG",
+    "ANN",
+    "BLE",
+    "C4",
+    "E",
+    "F",
+    "FIX",
+    "FLY",
+    "I",
+    "PERF",
+    "PIE",
+    "PLR6301",
+    "RUF",
+    "RSE",
+    "SIM",
+    "SLOT",
+    "T10",
+    "T20",
+    "TD",
+    "TID",
+]
+lint.preview = true
+lint.ignore = ["ANN401"]
+line-length = 120
+show-fixes = true
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-huggingface.git"

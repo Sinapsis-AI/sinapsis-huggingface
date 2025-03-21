@@ -1,0 +1,34 @@
+agent:
+  name: my_agent_test
+  description: "GroundingDINO and UltralyticsSAM image segmentation"
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: GroundingDINO
+    class_name: GroundingDINO
+    template_input: InputTemplate
+    attributes:
+      model_path: IDEA-Research/grounding-dino-base
+      inference_mode: zero_shot
+      text_input: a person.
+      device: cuda
+      threshold: 0.2
+      text_threshold: 0.3
+
+  - template_name: UltralyticsSAM
+    class_name: UltralyticsPredict
+    template_input: GroundingDINO
+    attributes:
+      model_class: SAM
+      model: sam2_t.pt
+      use_detections_as_sam_prompt: true
+
+  - template_name: SegmentationMaskDrawer
+    class_name: SegmentationMaskDrawer
+    template_input: UltralyticsSAM
+    attributes:
+      overwrite: true
+      randomized_color: false

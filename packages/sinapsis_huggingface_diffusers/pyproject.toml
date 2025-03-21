@@ -1,0 +1,40 @@
+[project]
+name = "sinapsis-huggingface-diffusers"
+version = "0.1.0"
+description = "Templates for HuggingFace Diffusers, supporting text-to-image, image-to-image, video generation, and inpainting workflows."
+authors = [
+    {name = "SinapsisAI", email = "dev@sinapsis-ai.com"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = [
+    "accelerate>=1.1.1",
+    "diffusers>=0.31.0",
+    "opencv-python-headless>=4.11.0.86",
+    "sinapsis>=0.1.1",
+    "torch>=2.5.1",
+    "transformers>=4.47.1",
+]
+
+[project.optional-dependencies]
+sinapsis-image-transforms = [
+    "sinapsis-image-transforms>=0.1.0",
+]
+all = [
+    "sinapsis-huggingface-diffusers[sinapsis-image-transforms]",
+]
+
+[tool.uv.sources]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[[tool.uv.index]]
+url = "https://pypi.sinapsis.tech/"
+
+[project.urls]
+Homepage = "https://sinapsis.tech"
+Documentation = "https://docs.sinapsis.tech/docs"
+Tutorials = "https://docs.sinapsis.tech/tutorials"
+Repository = "https://github.com/Sinapsis-AI/sinapsis-huggingface.git"

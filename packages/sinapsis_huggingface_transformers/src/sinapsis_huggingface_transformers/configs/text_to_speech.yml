@@ -1,0 +1,36 @@
+agent:
+  name: tts
+  description: "Agent to perform text to speech generation using Transformers."
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: TextInput
+    class_name: TextInput
+    template_input: InputTemplate
+    attributes:
+      text: Hello, my name is Suno. And, uh — and I like pizza. [laughs] But I also have other interests such as playing tic tac toe.
+
+  - template_name: TextToSpeechTransformers
+    class_name: TextToSpeechTransformers
+    template_input: TextInput
+    attributes:
+      model_path: suno/bark
+      device: cuda
+      torch_dtype: float32
+      n_words: 300
+      seed: 7
+      use_embeddings: false
+      inference_kwargs:
+        generate_kwargs:
+          do_sample: true
+          temperature: 0.7
+
+  - template_name: AudioWriterSoundfile
+    class_name: AudioWriterSoundfile
+    template_input: TextToSpeechTransformers
+    attributes:
+      root_dir: ./test
+      save_dir: audios

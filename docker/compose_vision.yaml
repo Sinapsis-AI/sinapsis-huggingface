@@ -1,0 +1,20 @@
+services:
+  sinapsis-huggingface-vision:
+    extends:
+      service: sinapsis-huggingface-main
+      file: compose.yaml
+    container_name: sinapsis-huggingface-vision
+    environment:
+      IS_DOCKER: true
+      DETECTION_CONFIG_PATH: /app/sinapsis_huggingface/configs/grounding_dino_detection.yml
+      SEGMENTATION_CONFIG_PATH: /app/sinapsis_huggingface/configs/grounding_dino_ultralytics_segmentation.yml
+      CLASSIFICATION_CONFIG_PATH: /app/sinapsis_huggingface/configs/grounding_dino_classification.yml
+    volumes:
+      - "../packages/sinapsis_huggingface_grounding_dino/src/sinapsis_huggingface_grounding_dino/configs:/app/sinapsis_huggingface/configs/"
+      - "../webapps:/app/webapps"
+    network_mode: "host"
+  sinapsis-huggingface-vision-gradio:
+    extends:
+      service: sinapsis-huggingface-vision
+    container_name: sinapsis-huggingface-vision-gradio
+    command: python3 webapps/vision_demo.py

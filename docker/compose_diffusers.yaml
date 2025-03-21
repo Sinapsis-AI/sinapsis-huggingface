@@ -1,0 +1,18 @@
+
+services:
+  sinapsis-huggingface-diffusers:
+    extends:
+      service: sinapsis-huggingface-main
+      file: compose.yaml
+    container_name: sinapsis-huggingface-diffusers
+    environment:
+      AGENT_CONFIG_PATH: /app/sinapsis_huggingface/configs/text_to_image.yml
+    volumes:
+      - "../packages/sinapsis_huggingface_diffusers/src/sinapsis_huggingface_diffusers/configs:/app/sinapsis_huggingface/configs/"
+      - "../webapps:/app/webapps"
+    network_mode: "host"
+  sinapsis-huggingface-diffusers-gradio:
+    extends:
+      service: sinapsis-huggingface-diffusers
+    container_name: sinapsis-huggingface-diffusers-gradio
+    command: python3 webapps/diffusers_demo.py

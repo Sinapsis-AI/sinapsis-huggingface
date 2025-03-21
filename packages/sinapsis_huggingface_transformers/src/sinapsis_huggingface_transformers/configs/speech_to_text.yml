@@ -1,0 +1,23 @@
+agent:
+  name: stt
+  description: "Agent to perform speech to text transcription using Transformers."
+
+templates:
+  - template_name: InputTemplate
+    class_name: InputTemplate
+    attributes: {}
+
+  - template_name: AudioReaderSoundfile
+    class_name: AudioReaderSoundfile
+    template_input: InputTemplate
+    attributes:
+      audio_file_path: audio.flac
+
+  - template_name: SpeechToTextTransformers
+    class_name: SpeechToTextTransformers
+    template_input: AudioReaderSoundfile
+    attributes:
+      model_path: "openai/whisper-small"
+      device: "cuda"
+      pipeline_kwargs:
+        chunk_length_s: 30
