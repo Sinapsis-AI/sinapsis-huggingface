@@ -39,6 +39,7 @@ class SpeechToTextTransformers(TransformersBase):
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.task = "automatic-speech-recognition"
+        self.setup_pipeline()
 
     def transformation_method(self, container: DataContainer) -> DataContainer:
         """Speech recognition (speech-to-text) using a Transformers Pipeline.

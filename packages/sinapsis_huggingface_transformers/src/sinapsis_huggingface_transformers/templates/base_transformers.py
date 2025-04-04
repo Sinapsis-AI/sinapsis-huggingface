@@ -63,6 +63,17 @@ class TransformersBase(Template):
         self._TORCH_DTYPE = {"float16": torch.float16, "float32": torch.float32}
         self.task: str | None = None
         self._set_seed()
+
+    def setup_pipeline(self) -> None:
+        """Initialize and configure the HuggingFace Transformers processing pipeline.
+
+        Raises:
+            ValueError: If called before the task attribute is set. The task must be
+                defined by the child class before pipeline initialization.
+        """
+        if self.task is None:
+            raise ValueError("'task' must be assigned before pipeline setup")
+
         self.processor = self._initialize_processor()
         self.pipeline = self.initialize_pipeline()
 

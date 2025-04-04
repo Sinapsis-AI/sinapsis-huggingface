@@ -64,8 +64,9 @@ class TextToSpeechTransformers(TransformersBase):
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
-        self.sample_rate = self._get_sample_rate()
         self.task = "text-to-speech"
+        self.setup_pipeline()
+        self.sample_rate = self._get_sample_rate()
 
     def _get_sample_rate(self) -> int:
         """Retrieve the sample rate for the generated audio.

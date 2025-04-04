@@ -1,7 +1,7 @@
 [project]
 name = "sinapsis-huggingface-transformers"
-version = "0.1.0"
-description = "Templates for HuggingFace Transformers, supporting automatic-speech-recognition, text-to-speech, translation and summarization templates "
+version = "0.2.0"
+description = "Templates for HuggingFace Transformers, supporting automatic-speech-recognition, text-to-speech, translation and summarization templates"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis-ai.com"},
 ]

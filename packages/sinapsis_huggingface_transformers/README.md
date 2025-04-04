@@ -57,10 +57,15 @@ Sinapsis Hugging Face Transformers provides customizable inference templates for
 
 
 - **ImageToTextTransformers**: Generates textual descriptions from input images using Hugging Face image-to-text models.
+- **PaliGemmaInference**: Generate captions for images.
+- **PaliGemmaDetection**: Detect specific objects in images.
 - **SpeechToTextTransformers**: Converts spoken audio into text using automatic speech recognition (ASR) models.
 - **SummarizationTransformers**: Summarizes long text into concise summaries using Hugging Face summarization models.
 - **TextToSpeechTransformers**: Converts text into lifelike audio using text-to-speech (TTS) models.
 - **TranslationTransformers**: Translates text from a source language to a target language using Hugging Face translation models.
+
+
+
 
 <h2 id="example">▶️ Example Usage</h2>
 

@@ -38,6 +38,7 @@ class SummarizationTransformers(TransformersBase):
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.task = "summarization"
+        self.setup_pipeline()
 
     def transformation_method(self, container: DataContainer) -> DataContainer:
         """Summarize text using a Transformers Pipeline.

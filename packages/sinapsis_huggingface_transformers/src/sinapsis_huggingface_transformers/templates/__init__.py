@@ -6,6 +6,9 @@ _root_lib_path = "sinapsis_huggingface_transformers.templates"
 
 _template_lookup = {
     "ImageToTextTransformers": f"{_root_lib_path}.image_to_text_transformers",
+    "PaliGemmaDetection": f"{_root_lib_path}.pali_gemma.pali_gemma_detection",
+    "PaliGemmaInference": f"{_root_lib_path}.pali_gemma.pali_gemma_inference",
+    "PaliGemmaSegmentation": f"{_root_lib_path}.pali_gemma.pali_gemma_segmentation",
     "SpeechToTextTransformers": f"{_root_lib_path}.speech_to_text_transformers",
     "SummarizationTransformers": f"{_root_lib_path}.summarization_transformers",
     "TextToSpeechTransformers": f"{_root_lib_path}.text_to_speech_transformers",

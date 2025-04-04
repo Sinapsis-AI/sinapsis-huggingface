@@ -38,6 +38,7 @@ class ImageToTextTransformers(TransformersBase):
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
         self.task = "image-to-text"
+        self.setup_pipeline()
 
     @staticmethod
     def _convert_to_pil(image_content: Image.Image | np.ndarray) -> Image.Image:

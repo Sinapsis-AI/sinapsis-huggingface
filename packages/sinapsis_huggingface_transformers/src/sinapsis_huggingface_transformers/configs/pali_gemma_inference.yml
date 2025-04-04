@@ -1,0 +1,18 @@
+agent:
+  name: paligemma-inference
+  description: Agent to perform visual question answering using paligemma model.
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+- template_name: PaliGemmaInference
+  class_name: PaliGemmaInference
+  template_input: InputTemplate
+  attributes:
+    model_path: google/paligemma2-3b-pt-224
+    processor_path: google/paligemma2-3b-pt-224
+    prompt: "How many plants are there in the image?"
+    torch_dtype: "float16"
+    device: "cuda"

@@ -1,0 +1,25 @@
+agent:
+  name: paligemma-inference
+  description: Agent to perform object detection using paligemma model.
+
+templates:
+- template_name: InputTemplate
+  class_name: InputTemplate
+  attributes: {}
+
+
+- template_name: PaliGemmaDetection
+  class_name: PaliGemmaDetection
+  template_input: InputTemplate
+  attributes:
+    model_path: google/paligemma2-3b-pt-224
+    processor_path: google/paligemma2-3b-pt-224
+    objects_to_detect: plant
+    torch_dtype: "float16"
+    device: "cuda"
+
+- template_name: BBoxDrawer
+  class_name: BBoxDrawer
+  template_input: PaliGemmaDetection
+  attributes:
+    overwrite: true
