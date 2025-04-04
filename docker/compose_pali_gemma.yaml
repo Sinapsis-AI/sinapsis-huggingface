@@ -1,0 +1,19 @@
+services:
+  sinapsis-huggingface-paligemma:
+    extends:
+      service: sinapsis-huggingface-main
+      file: compose.yaml
+    container_name: sinapsis-huggingface-paligemma
+    environment:
+      HF_TOKEN: ${HF_TOKEN}
+      AGENT_CONFIG_PATH: /app/sinapsis_huggingface/configs/pali_gemma_detection.yml
+    volumes:
+      - "../packages/sinapsis_huggingface_transformers/src/sinapsis_huggingface_transformers/configs:/app/sinapsis_huggingface/configs/"
+      - "../webapps:/app/webapps"
+      - "~/.cache/huggingface:/root/.cache/huggingface"
+    network_mode: "host"
+  sinapsis-huggingface-paligemma-gradio:
+    extends:
+      service: sinapsis-huggingface-paligemma
+    container_name: sinapsis-huggingface-paligemma-gradio
+    command: python3 webapps/paligemma_demo.py
