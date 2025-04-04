@@ -130,22 +130,28 @@ The **Sinapsis web applications** provide an interactive way to explore and expe
 > [!IMPORTANT]
 > To run any of the apps, you first need to clone this repo:
 
+```bash
+git clone git@github.com:Sinapsis-ai/sinapsis-huggingface.git
+cd sinapsis-huggingface
+```
+
 > [!NOTE]
 > If you'd like to enable external app sharing in Gradio, `export GRADIO_SHARE_APP=True`
 
 > [!NOTE]
 > Agent configuration can be changed through the AGENT_CONFIG_PATH env var. You can check the available configurations in each package configs folder.
 
+> [!IMPORTANT]
+> Please make sure you have a valid huggingface access token in order to run the paligemma webapp. For further instructions on how to create an access token see
+https://huggingface.co/docs/transformers.js/en/guides/private
 
-```bash
-git clone git@github.com:Sinapsis-ai/sinapsis-huggingface.git
-cd sinapsis-huggingface
-```
+
+
 
 <details>
 <summary id="docker"><strong><span style="font-size: 1.4em;">🐳 Build with Docker</span></strong></summary>
 
-**IMPORTANT** The docker image depends on the sinapsis-nvidia:base image. To build it, refer to the [official sinapsis documentation]([https://](https://github.com/Sinapsis-ai/sinapsis?tab=readme-ov-file#docker)
+**IMPORTANT** The docker image depends on the sinapsis-nvidia:base image. To build it, refer to the [official sinapsis documentation](https://github.com/Sinapsis-AI/sinapsis/blob/main/README.md#docker)
 
 
 1. **Build the sinapsis-huggingface image**:
@@ -153,16 +159,34 @@ cd sinapsis-huggingface
 docker compose -f docker/compose.yaml build
 ```
 2. **Start the container**:
+
+For Diffusers app
 ```bash
 docker compose -f docker/compose_diffusers.yaml up sinapsis-huggingface-diffusers-gradio -d
 ```
-**NOTE**: There is also a service to deploy the vision app. To do so, use:
+For Grounding-Dino app
 ```bash
 docker compose -f docker/compose_vision.yaml up sinapsis-huggingface-vision-gradio -d
 ```
+For Paligemma app
+
+```bash
+export HF_TOKEN="your_huggingface_token"
+docker compose -f docker/compose_pali_gemma.yaml up sinapsis-huggingface-paligemma-gradio -d
+```
 3. **Check the status**:
+
+For Diffusers app
 ```bash
 docker logs -f sinapsis-huggingface-diffusers-gradio
+```
+For Grounding-Dino app
+```bash
+docker logs -f sinapsis-huggingface-vision-gradio
+```
+For Paligemma app
+```bash
+docker logs -f sinapsis-huggingface-paligemma-gradio
 ```
 **NOTE**: If using the vision app, please change the name of the service accordingly
 
@@ -173,8 +197,18 @@ Running on local URL:  http://127.0.0.1:7860
 **NOTE**: The local URL can be different, please check the logs
 
 5. **To stop the app**:
+
+For Diffusers app
 ```bash
 docker compose -f docker/compose_diffusers.yaml down
+```
+For Grounding-Dino app
+```bash
+docker compose -f docker/compose_vision.yaml down
+```
+For Paligemma app
+```bash
+docker compose -f docker/compose_pali_gemma.yaml down
 ```
 </details>
 
@@ -194,19 +228,23 @@ uv pip install sinapsis-huggingface[all] --extra-index-url https://pypi.sinapsis
 ```
 3. Run the webapp.
 
+For Diffusers app
 ```bash
 uv run webapps/diffusers_demo.py
+```
+For Grounding-Dino app
+```bash
+uv run webapps/vision_demo.py
+```
+For Paligemma app
+```bash
+export HF_TOKEN="your_huggingface_token"
+uv run webapps/paligemma_demo.py
 ```
 
 4. The terminal will display the URL to access the webapp, e.g., :
 ```bash
 Running on local URL:  http://127.0.0.1:7860
-```
-
-**NOTE**: If you want to try the vision app, in step 5 change the command to:
-
-```bash
-python webapps/vision_demo.py
 ```
 
 </details>
