@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-GroundingDINO Zero-Shot Classification Module.
-
-This module provides an implementation of a zero-shot classification system
-using the GroundingDINO model. The classification pipeline allows for image
-classification tasks based on a predefined set of classes or text input.
-"""
 
 from typing import Any
 

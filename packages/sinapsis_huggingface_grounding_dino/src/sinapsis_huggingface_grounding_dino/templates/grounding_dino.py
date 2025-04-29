@@ -6,7 +6,8 @@ from typing import Any, Literal
 import torch
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from transformers import (
     AutoModelForZeroShotObjectDetection,

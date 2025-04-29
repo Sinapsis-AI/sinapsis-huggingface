@@ -1,12 +1,12 @@
 [project]
 name = "sinapsis-huggingface-grounding-dino"
-version = "0.1.0"
+version = "0.1.1"
 description = "Templates for GroundingDINO with HuggingFace"
 authors = [
-    {name = "SinapsisAI", email = "dev@sinapsis-ai.com"},
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
 ]
 readme = "README.md"
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "accelerate>=1.1.1",

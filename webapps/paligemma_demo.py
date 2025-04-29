@@ -31,7 +31,7 @@ def build_demo(config_path: str = CONFIG_FILE) -> gr.Blocks:
     Returns:
         gr.Blocks: A Gradio Blocks interface configured for image and text processing.
     """
-    is_text_mode = needs_input_output(config_path, ("PaligemmaInference",))
+    is_text_mode = needs_input_output(config_path, ("PaliGemmaInference",))
     agent = generic_agent_builder(config_path)
 
     def process(image: Any, text: str) -> np.ndarray | None:

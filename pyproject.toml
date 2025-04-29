@@ -1,12 +1,12 @@
 [project]
 name = "sinapsis-huggingface"
-version = "0.2.0"
+version = "0.2.1"
 description = "Package for HuggingFace-based templates"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
 ]
 readme = "README.md"
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "sinapsis>=0.1.1",

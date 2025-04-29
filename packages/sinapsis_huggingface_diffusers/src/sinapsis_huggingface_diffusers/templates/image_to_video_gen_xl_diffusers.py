@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from diffusers import I2VGenXLPipeline
-from sinapsis_core.template_base.template import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_huggingface_diffusers.templates.image_to_image_diffusers import (
     ImageToImageDiffusers,

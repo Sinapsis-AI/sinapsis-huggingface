@@ -8,7 +8,8 @@ import torch
 import torch.nn.functional as F
 import torchaudio
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
-from sinapsis_core.template_base import Template, TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from speechbrain.inference.speaker import EncoderClassifier
 

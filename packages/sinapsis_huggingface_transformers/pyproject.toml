@@ -1,12 +1,12 @@
 [project]
 name = "sinapsis-huggingface-transformers"
-version = "0.2.0"
+version = "0.2.1"
 description = "Templates for HuggingFace Transformers, supporting automatic-speech-recognition, text-to-speech, translation and summarization templates"
 authors = [
-    {name = "SinapsisAI", email = "dev@sinapsis-ai.com"},
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
 ]
 readme = "README.md"
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "accelerate>=1.1.1",

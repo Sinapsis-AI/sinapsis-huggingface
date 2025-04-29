@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from diffusers import AutoPipelineForInpainting
 from sinapsis_core.data_containers.data_packet import ImageAnnotations, ImagePacket
-from sinapsis_core.template_base.template import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_huggingface_diffusers.templates.base_diffusers import (
     BaseDiffusersAttributes,

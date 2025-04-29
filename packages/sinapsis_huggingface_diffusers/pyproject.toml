@@ -1,12 +1,12 @@
 [project]
 name = "sinapsis-huggingface-diffusers"
-version = "0.1.0"
+version = "0.1.1"
 description = "Templates for HuggingFace Diffusers, supporting text-to-image, image-to-image, video generation, and inpainting workflows."
 authors = [
-    {name = "SinapsisAI", email = "dev@sinapsis-ai.com"},
+    {name = "SinapsisAI", email = "dev@sinapsis.tech"},
 ]
 readme = "README.md"
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "accelerate>=1.1.1",
@@ -19,7 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 sinapsis-image-transforms = [
-    "sinapsis-image-transforms>=0.1.0",
+    "sinapsis-albumentations>=0.1.1",
 ]
 all = [
     "sinapsis-huggingface-diffusers[sinapsis-image-transforms]",

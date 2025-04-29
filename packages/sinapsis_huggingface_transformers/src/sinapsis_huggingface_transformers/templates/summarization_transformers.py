@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_huggingface_transformers.templates.base_transformers import TransformersBase
 

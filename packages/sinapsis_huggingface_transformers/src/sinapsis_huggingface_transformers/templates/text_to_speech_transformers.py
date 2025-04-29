@@ -3,7 +3,7 @@
 import numpy as np
 import torch
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer, TextPacket
-from sinapsis_core.template_base import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_huggingface_transformers.helpers import sentences_to_n_words, split_text_into_sentences
 from sinapsis_huggingface_transformers.templates.base_transformers import (

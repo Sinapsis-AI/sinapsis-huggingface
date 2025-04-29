@@ -7,8 +7,8 @@ from typing import Any, Literal
 import torch
 from pydantic import Field
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base import (
-    Template,
+from sinapsis_core.template_base import Template
+from sinapsis_core.template_base.base_models import (
     TemplateAttributes,
     TemplateAttributeType,
 )

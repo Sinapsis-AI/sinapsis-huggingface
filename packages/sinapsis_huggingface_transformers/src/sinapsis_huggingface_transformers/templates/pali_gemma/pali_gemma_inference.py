@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 from sinapsis_data_visualization.helpers.detection_utils import bbox_xyxy_to_xywh
 from sinapsis_huggingface_transformers.templates.pali_gemma.pali_gemma_base import (
     PaliGemmaBase,

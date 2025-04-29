@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 
 from sinapsis_core.data_containers.annotations import ImageAnnotations
-from sinapsis_core.template_base import TemplateAttributeType
+from sinapsis_core.template_base.base_models import TemplateAttributeType
 from sinapsis_huggingface_transformers.templates.pali_gemma.pali_gemma_inference import (
     PaliGemmaInference,
     PaliGemmaInferenceAttributes,
