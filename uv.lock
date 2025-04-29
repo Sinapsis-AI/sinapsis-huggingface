@@ -3474,6 +3474,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/7b/c5/d0b120547fe27871ff51a1510dda825e747522acbbfeacbfca11cdd4979f/sinapsis-0.2.7-py3-none-any.whl", hash = "sha256:3224fe784411ace207a18ca21dab88abe5d54d45cf6a5cda693cb871d7fe2f60", size = 29176 },
 ]
 
+[package.optional-dependencies]
+webapp = [
+    { name = "gradio" },
+]
+
 [[package]]
 name = "sinapsis-albumentations"
 version = "0.1.1"
@@ -3571,7 +3576,7 @@ dependencies = [
 
 [package.optional-dependencies]
 all = [
-    { name = "gradio" },
+    { name = "sinapsis", extra = ["webapp"] },
     { name = "sinapsis-data-readers", extra = ["opencv"] },
     { name = "sinapsis-data-visualization", extra = ["visualization-matplotlib"] },
     { name = "sinapsis-data-writers" },
@@ -3582,7 +3587,7 @@ all = [
     { name = "sinapsis-ultralytics" },
 ]
 gradio-app = [
-    { name = "gradio" },
+    { name = "sinapsis", extra = ["webapp"] },
     { name = "sinapsis-data-readers", extra = ["opencv"] },
     { name = "sinapsis-data-visualization", extra = ["visualization-matplotlib"] },
     { name = "sinapsis-huggingface-diffusers", extra = ["all"] },
@@ -3601,8 +3606,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "gradio", marker = "extra == 'gradio-app'", specifier = "==5.3.0" },
     { name = "sinapsis", specifier = ">=0.1.1" },
+    { name = "sinapsis", extras = ["webapp"], marker = "extra == 'gradio-app'", specifier = ">=0.2.7" },
     { name = "sinapsis-data-readers", extras = ["opencv"], marker = "extra == 'gradio-app'", specifier = ">=0.1.0" },
     { name = "sinapsis-data-visualization", extras = ["visualization-matplotlib"], marker = "extra == 'gradio-app'", specifier = ">=0.1.0" },
     { name = "sinapsis-data-writers", marker = "extra == 'sinapsis-data-writers'", specifier = ">=0.1.0" },

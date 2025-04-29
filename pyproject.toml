@@ -14,12 +14,12 @@ dependencies = [
 
 [project.optional-dependencies]
 gradio-app = [
-    "gradio==5.3.0",
     "sinapsis-data-readers[opencv]>=0.1.0",
     "sinapsis-data-visualization[visualization-matplotlib]>=0.1.0",
     "sinapsis-huggingface-diffusers[all]",
     "sinapsis-huggingface-grounding-dino",
     "sinapsis-ultralytics>=0.1.0",
+    "sinapsis[webapp]>=0.2.7",
 ]
 
 
