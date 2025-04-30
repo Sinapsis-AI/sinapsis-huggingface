@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-huggingface-diffusers"
-version = "0.1.1"
+version = "0.1.2"
 description = "Templates for HuggingFace Diffusers, supporting text-to-image, image-to-image, video generation, and inpainting workflows."
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},

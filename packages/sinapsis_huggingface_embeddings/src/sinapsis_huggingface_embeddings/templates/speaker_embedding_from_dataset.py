@@ -5,7 +5,7 @@ from typing import Literal
 from datasets import load_dataset
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributes, UIPropertiesMetadata
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
 
@@ -63,7 +63,7 @@ class SpeakerEmbeddingFromDataset(Template):
     """
 
     AttributesBaseModel = SpeakerEmbeddingFromDatasetAttributes
-    CATEGORY = "Embeddings"
+    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.AUDIO)
 
     def execute(self, container: DataContainer) -> DataContainer:
         """Retrieve and attach speaker embeddings to specified packets in a DataContainer.

@@ -7,7 +7,12 @@ import torch
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from transformers import (
     AutoModelForZeroShotObjectDetection,
@@ -75,7 +80,7 @@ class GroundingDINO(Template):
 
     """
 
-    CATEGORY = "Grounding DINO"
+    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.IMAGE)
     KEYS = GroundingDINOKeys()
 
     class AttributesBaseModel(GroundingBaseAttributes):

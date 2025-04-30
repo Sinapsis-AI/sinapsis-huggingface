@@ -6,8 +6,10 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 
 
@@ -44,7 +46,7 @@ class HuggingFaceEmbeddingExtractor(Template):
     """
 
     AttributesBaseModel = HuggingFaceEmbeddingExtractorAttributes
-    CATEGORY = "Embeddings"
+    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.TEXT)
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

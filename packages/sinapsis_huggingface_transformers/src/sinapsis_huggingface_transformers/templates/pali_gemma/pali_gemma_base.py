@@ -6,8 +6,10 @@ import torch
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from transformers import AutoProcessor, PaliGemmaForConditionalGeneration
@@ -41,7 +43,7 @@ class PaliGemmaBase(Template):
     """Base class for PaliGemma implementations."""
 
     AttributesBaseModel = PaliGemmaBaseAttributes
-    CATEGORY = "Transformers"
+    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.IMAGE)
     _TORCH_DTYPE: ClassVar[dict[str, Any]] = {"float16": torch.float16, "float32": torch.float32}
 
     def __init__(self, attributes: TemplateAttributeType) -> None:

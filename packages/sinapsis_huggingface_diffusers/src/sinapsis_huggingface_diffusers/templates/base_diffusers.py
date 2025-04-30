@@ -11,8 +11,10 @@ from pydantic import BaseModel, ConfigDict
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import (
+    OutputTypes,
     TemplateAttributes,
     TemplateAttributeType,
+    UIPropertiesMetadata,
 )
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 
@@ -64,7 +66,7 @@ class BaseDiffusers(Template, ABC):
     """
 
     AttributesBaseModel = BaseDiffusersAttributes
-    CATEGORY = "Diffusers"
+    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.IMAGE)
     TORCH_DTYPE: dict = TorchTypes().model_dump()
 
     def __init__(self, attributes: TemplateAttributeType) -> None:

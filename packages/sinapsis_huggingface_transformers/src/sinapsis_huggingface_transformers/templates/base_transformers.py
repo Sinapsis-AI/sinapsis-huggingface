@@ -8,10 +8,7 @@ import torch
 from pydantic import Field
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import (
-    TemplateAttributes,
-    TemplateAttributeType,
-)
+from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType, UIPropertiesMetadata
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from transformers import AutoProcessor, pipeline
 from transformers.pipelines import Pipeline
@@ -56,7 +53,7 @@ class TransformersBase(Template):
     """
 
     AttributesBaseModel = TransformersBaseAttributes
-    CATEGORY = "Transformers"
+    UIProperties = UIPropertiesMetadata(category="Transformers")
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
