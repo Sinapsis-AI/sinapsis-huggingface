@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-huggingface"
-version = "0.2.2"
+version = "0.2.3"
 description = "Package for HuggingFace-based templates"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
