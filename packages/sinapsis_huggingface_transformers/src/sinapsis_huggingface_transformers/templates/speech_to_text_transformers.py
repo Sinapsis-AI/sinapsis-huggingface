@@ -51,14 +51,13 @@ class SpeechToTextTransformers(TransformersBase):
             DataContainer: DataContainer including the transcribed audio.
         """
         for audio_packet in container.audios:
-            if self.instance_name not in audio_packet.modified_by_templates:
-                audio = audio_packet.content
-                audio = audio.astype(np.float32)
-                transcribed_text = self.pipeline(audio, **self.attributes.inference_kwargs)[self.TEXT_KEY]
-                transcribed_text_textpacket = TextPacket(
-                    content=transcribed_text,
-                    source=audio_packet.source,
-                )
-                self.logger.info(f"Speech-to-text transcription: {transcribed_text}")
-                container.texts.append(transcribed_text_textpacket)
+            audio = audio_packet.content
+            audio = audio.astype(np.float32)
+            transcribed_text = self.pipeline(audio, **self.attributes.inference_kwargs)[self.TEXT_KEY]
+            transcribed_text_textpacket = TextPacket(
+                content=transcribed_text,
+                source=audio_packet.source,
+            )
+            self.logger.info(f"Speech-to-text transcription: {transcribed_text}")
+            container.texts.append(transcribed_text_textpacket)
         return container
