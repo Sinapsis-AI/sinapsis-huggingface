@@ -3,13 +3,18 @@
 import numpy as np
 import torch
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer, TextPacket
-from sinapsis_core.template_base.base_models import TemplateAttributeType
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType
 
 from sinapsis_huggingface_transformers.helpers import sentences_to_n_words, split_text_into_sentences
+from sinapsis_huggingface_transformers.helpers.tags import Tags
 from sinapsis_huggingface_transformers.templates.base_transformers import (
     TransformersBase,
     TransformersBaseAttributes,
 )
+
+TextToSpeechTransformersUIProperties = TransformersBase.UIProperties
+TextToSpeechTransformersUIProperties.output_type = OutputTypes.AUDIO
+TextToSpeechTransformersUIProperties.tags.extend([Tags.AUDIO, Tags.TEXT, Tags.TEXT_TO_SPEECH])
 
 
 class TextToSpeechAttributes(TransformersBaseAttributes):
@@ -61,6 +66,7 @@ class TextToSpeechTransformers(TransformersBase):
     """
 
     AttributesBaseModel = TextToSpeechAttributes
+    UIProperties = TextToSpeechTransformersUIProperties
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

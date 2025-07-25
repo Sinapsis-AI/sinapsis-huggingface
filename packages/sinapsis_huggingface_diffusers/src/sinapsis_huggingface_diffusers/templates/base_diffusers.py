@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import gc
 from abc import ABC, abstractmethod
 from typing import Any, Literal
 
@@ -17,6 +16,8 @@ from sinapsis_core.template_base.base_models import (
     UIPropertiesMetadata,
 )
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+
+from sinapsis_huggingface_diffusers.helpers.tags import Tags
 
 
 class BaseDiffusersAttributes(TemplateAttributes):
@@ -66,7 +67,11 @@ class BaseDiffusers(Template, ABC):
     """
 
     AttributesBaseModel = BaseDiffusersAttributes
-    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.IMAGE)
+    UIProperties = UIPropertiesMetadata(
+        category="HuggingFace",
+        output_type=OutputTypes.IMAGE,
+        tags=[Tags.HUGGINGFACE, Tags.DIFFUSERS, Tags.MODELS, Tags.GENERATIVE],
+    )
     TORCH_DTYPE: dict = TorchTypes().model_dump()
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
@@ -188,6 +193,9 @@ class BaseDiffusers(Template, ABC):
         This method performs garbage collection and clears GPU memory (if applicable) to prevent memory leaks
         and ensure efficient resource usage.
         """
-        gc.collect()
         if self.attributes.device == "cuda":
             torch.cuda.empty_cache()
+
+    def reset_state(self, template_name: str | None = None) -> None:
+        self._clear_memory()
+        super().reset_state(template_name)

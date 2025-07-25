@@ -2,9 +2,16 @@
 
 import numpy as np
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
-from sinapsis_core.template_base.base_models import TemplateAttributeType
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType
 
+from sinapsis_huggingface_transformers.helpers.tags import Tags
 from sinapsis_huggingface_transformers.templates.base_transformers import TransformersBase
+
+SpeechToTextTransformersUIProperties = TransformersBase.UIProperties
+SpeechToTextTransformersUIProperties.output_type = OutputTypes.TEXT
+SpeechToTextTransformersUIProperties.tags.extend(
+    [Tags.SPEECH, Tags.SPEECH_TO_TEXT, Tags.AUDIO, Tags.SPEECH_RECOGNITION, Tags.TEXT]
+)
 
 
 class SpeechToTextTransformers(TransformersBase):
@@ -35,6 +42,7 @@ class SpeechToTextTransformers(TransformersBase):
     """
 
     TEXT_KEY = "text"
+    UIProperties = SpeechToTextTransformersUIProperties
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

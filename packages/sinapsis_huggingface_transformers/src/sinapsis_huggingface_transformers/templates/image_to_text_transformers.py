@@ -3,9 +3,14 @@
 import numpy as np
 from PIL import Image
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
-from sinapsis_core.template_base.base_models import TemplateAttributeType
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType
 
+from sinapsis_huggingface_transformers.helpers.tags import Tags
 from sinapsis_huggingface_transformers.templates.base_transformers import TransformersBase
+
+ImageToTextTransformersUIProperties = TransformersBase.UIProperties
+ImageToTextTransformersUIProperties.output_type = OutputTypes.TEXT
+ImageToTextTransformersUIProperties.tags.extend([Tags.IMAGE, Tags.TEXT, Tags.IMAGE_TO_TEXT])
 
 
 class ImageToTextTransformers(TransformersBase):
@@ -34,6 +39,7 @@ class ImageToTextTransformers(TransformersBase):
     """
 
     GENERATED_TEXT_KEY = "generated_text"
+    UIProperties = ImageToTextTransformersUIProperties
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

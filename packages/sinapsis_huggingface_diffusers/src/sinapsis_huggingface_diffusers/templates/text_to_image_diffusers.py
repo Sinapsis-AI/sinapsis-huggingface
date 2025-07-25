@@ -3,7 +3,11 @@
 from diffusers import AutoPipelineForText2Image
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 
+from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.base_diffusers import BaseDiffusers
+
+TextToImageDiffusersUIProperties = BaseDiffusers.UIProperties
+TextToImageDiffusersUIProperties.tags.extend([Tags.TEXT, Tags.TEXT_TO_IMAGE, Tags.PROMPTS])
 
 
 class TextToImageDiffusers(BaseDiffusers):
@@ -33,6 +37,8 @@ class TextToImageDiffusers(BaseDiffusers):
         enable_model_cpu_offload: false
         generation_params: {}
     """
+
+    UIProperties = TextToImageDiffusersUIProperties
 
     @staticmethod
     def _pipeline_class() -> AutoPipelineForText2Image:

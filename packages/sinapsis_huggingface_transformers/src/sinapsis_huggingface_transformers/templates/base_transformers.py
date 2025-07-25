@@ -13,6 +13,8 @@ from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from transformers import AutoProcessor, pipeline
 from transformers.pipelines import Pipeline
 
+from sinapsis_huggingface_transformers.helpers.tags import Tags
+
 
 class TransformersBaseAttributes(TemplateAttributes):
     """Attributes for configuring the TransformersPipelineTemplate.
@@ -53,7 +55,10 @@ class TransformersBase(Template):
     """
 
     AttributesBaseModel = TransformersBaseAttributes
-    UIProperties = UIPropertiesMetadata(category="Transformers")
+    UIProperties = UIPropertiesMetadata(
+        category="Transformers",
+        tags=[Tags.HUGGINGFACE, Tags.TRANSFORMERS, Tags.MODELS],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -140,3 +145,8 @@ class TransformersBase(Template):
         """
         transformed_data_container = self.transformation_method(container)
         return transformed_data_container
+
+    def reset_state(self, template_name: str | None = None) -> None:
+        if self.attributes.device == "cuda":
+            torch.cuda.empty_cache()
+        super().reset_state(template_name)

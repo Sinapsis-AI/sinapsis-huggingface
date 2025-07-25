@@ -3,9 +3,13 @@
 from diffusers import I2VGenXLPipeline
 from sinapsis_core.template_base.base_models import TemplateAttributeType
 
+from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.image_to_image_diffusers import (
     ImageToImageDiffusers,
 )
+
+ImageToVideoGenXLDiffusersUIProperties = ImageToImageDiffusers.UIProperties
+ImageToVideoGenXLDiffusersUIProperties.tags.extend([Tags.VIDEO, Tags.IMAGE_TO_VIDEO])
 
 
 class ImageToVideoGenXLDiffusers(ImageToImageDiffusers):
@@ -38,6 +42,7 @@ class ImageToVideoGenXLDiffusers(ImageToImageDiffusers):
 
     """
 
+    UIProperties = ImageToVideoGenXLDiffusersUIProperties
     DEFAULT_NUM_FRAMES = 16
 
     def __init__(self, attributes: TemplateAttributeType) -> None:

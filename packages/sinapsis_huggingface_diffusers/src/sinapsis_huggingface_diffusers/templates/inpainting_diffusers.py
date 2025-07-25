@@ -9,12 +9,16 @@ from diffusers import AutoPipelineForInpainting
 from sinapsis_core.data_containers.data_packet import ImageAnnotations, ImagePacket
 from sinapsis_core.template_base.base_models import TemplateAttributeType
 
+from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.base_diffusers import (
     BaseDiffusersAttributes,
 )
 from sinapsis_huggingface_diffusers.templates.image_to_image_diffusers import (
     ImageToImageDiffusers,
 )
+
+InpaintingDiffusersUIProperties = ImageToImageDiffusers.UIProperties
+InpaintingDiffusersUIProperties.tags.extend([Tags.INPAINTING, Tags.BBOX, Tags.MASK])
 
 
 class InpaintingDiffusersAttributes(BaseDiffusersAttributes):
@@ -68,6 +72,7 @@ class InpaintingDiffusers(ImageToImageDiffusers):
 
     """
 
+    UIProperties = InpaintingDiffusersUIProperties
     AttributesBaseModel = InpaintingDiffusersAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:

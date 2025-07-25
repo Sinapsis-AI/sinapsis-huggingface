@@ -5,7 +5,11 @@ from typing import Any
 from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_core.data_containers.data_packet import ImagePacket
 
+from sinapsis_huggingface_grounding_dino.helpers.tags import Tags
 from sinapsis_huggingface_grounding_dino.templates.grounding_dino import GroundingBaseAttributes, GroundingDINO
+
+GroundingDINOClassificationUIProperties = GroundingDINO.UIProperties
+GroundingDINOClassificationUIProperties.tags.extend([Tags.CLASSIFICATION, Tags.CLASSIFIER, Tags.ZERO_SHOT])
 
 
 class GroundingDINOClassificationAttributes(GroundingBaseAttributes):
@@ -56,6 +60,7 @@ class GroundingDINOClassification(GroundingDINO):
     """
 
     AttributesBaseModel = GroundingDINOClassificationAttributes
+    UIProperties = GroundingDINOClassificationUIProperties
 
     def validate_and_format_text_input(self, text_input: str) -> str:
         """Validates and formats the text input for consistency.

@@ -12,6 +12,8 @@ from sinapsis_core.template_base.base_models import (
     UIPropertiesMetadata,
 )
 
+from sinapsis_huggingface_embeddings.helpers.tags import Tags
+
 
 class HuggingFaceEmbeddingExtractorAttributes(TemplateAttributes):
     """
@@ -46,7 +48,11 @@ class HuggingFaceEmbeddingExtractor(Template):
     """
 
     AttributesBaseModel = HuggingFaceEmbeddingExtractorAttributes
-    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.TEXT)
+    UIProperties = UIPropertiesMetadata(
+        category="HuggingFace",
+        output_type=OutputTypes.TEXT,
+        tags=[Tags.TEXT, Tags.EXTRACTOR, Tags.TEXT, Tags.HUGGINGFACE, Tags.MODELS],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

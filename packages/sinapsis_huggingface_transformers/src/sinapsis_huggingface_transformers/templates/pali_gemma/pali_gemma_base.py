@@ -12,6 +12,7 @@ from sinapsis_core.template_base.base_models import (
     UIPropertiesMetadata,
 )
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
+from sinapsis_huggingface_transformers.helpers.tags import Tags
 from transformers import AutoProcessor, PaliGemmaForConditionalGeneration
 
 
@@ -43,7 +44,11 @@ class PaliGemmaBase(Template):
     """Base class for PaliGemma implementations."""
 
     AttributesBaseModel = PaliGemmaBaseAttributes
-    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.IMAGE)
+    UIProperties = UIPropertiesMetadata(
+        category="HuggingFace",
+        output_type=OutputTypes.IMAGE,
+        tags=[Tags.HUGGINGFACE, Tags.IMAGE, Tags.PALIGEMMA, Tags.MODELS],
+    )
     _TORCH_DTYPE: ClassVar[dict[str, Any]] = {"float16": torch.float16, "float32": torch.float32}
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
@@ -97,3 +102,8 @@ class PaliGemmaBase(Template):
         Returns:
             DataContainer: The processed container with model outputs.
         """
+
+    def reset_state(self, template_name: str | None = None) -> None:
+        if self.attributes.device == "cuda":
+            torch.cuda.empty_cache()
+        super().reset_state(template_name)

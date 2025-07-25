@@ -1,58 +1,90 @@
 # -*- coding: utf-8 -*-
 
+from typing import Any
+
 import gradio as gr
 from sinapsis.webapp.agent_gradio_helper import (
     add_logo_and_title,
     css_header,
-    init_image_inference,
 )
-from sinapsis_core.agent.builder import load_yaml_config
+from sinapsis_core.agent.agent import Agent
+from sinapsis_core.cli.run_agent_from_config import generic_agent_builder
+from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.utils.env_var_keys import AGENT_CONFIG_PATH, GRADIO_SHARE_APP
 
 DEFAULT_CONFIG = "packages/sinapsis_huggingface_diffusers/src/sinapsis_huggingface_diffusers/configs/text_to_image.yml"
 CONFIG_FILE = AGENT_CONFIG_PATH or DEFAULT_CONFIG
+TEXT_INPUT_TEMPLATE_NAME = "TextToImageDiffusers"
 
 
-def needs_input_output(config_path: str, template_names: tuple[str, ...]) -> bool:
-    """
-    Determines if the diffusion pipeline requires an input image based on the configuration.
+class ImageGenerationApp:
+    def __init__(self, config_file: str, text_input_template: str) -> None:
+        self.config_file = config_file
+        self.text_input_template = text_input_template
 
-    Args:
-        config_path (str): Path to the YAML configuration file.
-        template_names (tuple[str]): Names of templates to check if are present in the configuration.
+    def init_agent(self) -> tuple[Agent, bool]:
+        agent = generic_agent_builder(self.config_file)
+        return agent, True
 
-    Returns:
-        bool: True if the model requires an input image (Image2Image or Inpainting),
-              False otherwise.
-    """
-    config = load_yaml_config(config_path)
-    return any(template["class_name"] in template_names for template in config["templates"])
+    def generate_image(self, initialized: bool, agent: Agent, prompt: str) -> tuple[Any, str | None]:
+        """
+        Handles the image generation pipeline: updates agent, runs agent, and extracts result.
 
+        Args:
+            initialized (bool): Whether the agent is initialized.
+            agent (Agent): The agent instance.
+            prompt (str): The user prompt.
 
-def build_demo(config_path: str = CONFIG_FILE, title: str = "Sinapsis Diffusers Demo") -> gr.Interface:
-    """
-    Builds and configures the appropriate Gradio demo interface based on the model type.
+        Returns:
+            tuple[Any, str | None]: The resulting image (or None) and a status message.
+        """
+        if not initialized:
+            return None, "#### Model not ready! Please wait..."
+        if not prompt:
+            gr.Warning("Please enter a valid prompt.")
+            return None, "Please enter a valid prompt."
+        new_prompt = {"prompt": prompt}
+        agent.update_template_attribute(self.text_input_template, "generation_params", new_prompt)
+        container = DataContainer()
+        output_container = agent(container)
+        if hasattr(output_container, "images") and output_container.images:
+            img = output_container.images[-1].content
+            return img, None
+        return None, "No image generated."
 
-    This function determines whether to create a text-to-image interface or an
-    image-to-image/inpainting interface based on the configuration.
+    def inner_functionality(self, interface: gr.Blocks) -> None:
+        """
+        Defines the Gradio UI layout and connects UI events to backend logic.
 
-    Args:
-        config_path (str): Path to the YAML configuration file. Defaults to CONFIG_FILE.
-        title (str): Title for the Gradio interface. Defaults to "Sinapsis Diffusers Demo".
+        Args:
+            interface (gr.Blocks): The Gradio Blocks interface.
+        """
+        agent_state = gr.State()
+        initialized_state = gr.State(False)
+        interface.load(self.init_agent, outputs=[agent_state, initialized_state])
 
-    Returns:
-        gr.Interface: The configured Gradio interface.
-    """
-    image_input = gr.Image
-    if not needs_input_output(config_path, ("ImageToImageDiffusers", "InpaintingDiffusers")):
-        image_input = None
+        prompt = gr.Textbox(
+            value="cat with boots",
+            placeholder="Describe the image you want to generate",
+        )
+        generate_btn = gr.Button("Generate")
+        status_msg = gr.Markdown("#### Initializing model...")
 
-    with gr.Blocks(title=title, css=css_header()) as demo:
-        add_logo_and_title(title)
-        init_image_inference(config_path, image_input=image_input)
-    return demo
+        image_output = gr.Image(label="Generated image", visible=True)
+
+        generate_btn.click(
+            self.generate_image,
+            inputs=[initialized_state, agent_state, prompt],
+            outputs=[image_output, status_msg],
+        )
+
+    def __call__(self) -> gr.Blocks:
+        with gr.Blocks(css=css_header()) as demo:
+            add_logo_and_title("Sinapsis Huggingface Diffusers Image Generation")
+            self.inner_functionality(demo)
+        return demo
 
 
 if __name__ == "__main__":
-    demo = build_demo()
-    demo.launch(share=GRADIO_SHARE_APP)
+    app = ImageGenerationApp(CONFIG_FILE, TEXT_INPUT_TEMPLATE_NAME)
+    app().launch(share=GRADIO_SHARE_APP)

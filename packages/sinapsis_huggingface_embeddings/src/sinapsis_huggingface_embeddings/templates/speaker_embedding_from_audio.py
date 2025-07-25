@@ -9,9 +9,16 @@ import torch.nn.functional as F
 import torchaudio
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer
 from sinapsis_core.template_base import Template
-from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import (
+    OutputTypes,
+    TemplateAttributes,
+    TemplateAttributeType,
+    UIPropertiesMetadata,
+)
 from sinapsis_core.utils.env_var_keys import SINAPSIS_CACHE_DIR
 from speechbrain.inference.speaker import EncoderClassifier
+
+from sinapsis_huggingface_embeddings.helpers.tags import Tags
 
 
 class SpeakerEmbeddingFromAudioAttributes(TemplateAttributes):
@@ -63,7 +70,11 @@ class SpeakerEmbeddingFromAudio(Template):
     """
 
     AttributesBaseModel = SpeakerEmbeddingFromAudioAttributes
-    CATEGORY = "Embeddings"
+    UIProperties = UIPropertiesMetadata(
+        category="HuggingFace",
+        output_type=OutputTypes.AUDIO,
+        tags=[Tags.EMBEDDINGS, Tags.HUGGINGFACE, Tags.MODELS, Tags.AUDIO, Tags.SPEAKER_EMBEDDING],
+    )
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -134,8 +145,8 @@ class SpeakerEmbeddingFromAudio(Template):
                 packets.
         """
         if not container.audios:
-            raise ValueError("No audio packets found in the container.")
-
+            self.logger.debug("No audio packets found in the container.")
+            return container
         embeddings = [
             self._postprocess_speaker_embedding(
                 self.classifier.encode_batch(self._process_audio(audio_packet), normalize=self.attributes.normalize)

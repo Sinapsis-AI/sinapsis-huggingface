@@ -5,10 +5,8 @@ from typing import Callable
 _root_lib_path = "sinapsis_huggingface_embeddings.templates"
 
 _template_lookup = {
-    "HuggingFaceEmbeddingNodeGenerator": f"{_root_lib_path}.embedding_node_generator",
     "HuggingFaceEmbeddingExtractor": f"{_root_lib_path}.hugging_face_embedding_extractor",
     "SpeakerEmbeddingFromAudio": f"{_root_lib_path}.speaker_embedding_from_audio",
-    "SpeakerEmbeddingFromDataset": f"{_root_lib_path}.speaker_embedding_from_dataset",
 }
 
 

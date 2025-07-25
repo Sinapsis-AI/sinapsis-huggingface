@@ -22,6 +22,7 @@ from transformers import (
 )
 
 from sinapsis_huggingface_grounding_dino.helpers.grounding_dino_keys import GroundingDINOKeys
+from sinapsis_huggingface_grounding_dino.helpers.tags import Tags
 
 
 class GroundingBaseAttributes(TemplateAttributes):
@@ -80,7 +81,19 @@ class GroundingDINO(Template):
 
     """
 
-    UIProperties = UIPropertiesMetadata(category="HuggingFace", output_type=OutputTypes.IMAGE)
+    UIProperties = UIPropertiesMetadata(
+        category="HuggingFace",
+        output_type=OutputTypes.IMAGE,
+        tags=[
+            Tags.ANNOTATIONS,
+            Tags.GROUNDING_DINO,
+            Tags.HUGGINGFACE,
+            Tags.IMAGE,
+            Tags.INFERENCE,
+            Tags.MODELS,
+            Tags.TRANSFORMERS,
+        ],
+    )
     KEYS = GroundingDINOKeys()
 
     class AttributesBaseModel(GroundingBaseAttributes):
@@ -337,3 +350,16 @@ class GroundingDINO(Template):
             self._process_image_packet(image_packet)
 
         return container
+
+    def _clear_memory(self) -> None:
+        """Clears memory to free up resources.
+
+        This method performs garbage collection and clears GPU memory (if applicable) to prevent memory leaks
+        and ensure efficient resource usage.
+        """
+        if self.attributes.device == "cuda":
+            torch.cuda.empty_cache()
+
+    def reset_state(self, template_name: str | None = None) -> None:
+        self._clear_memory()
+        super().reset_state(template_name)

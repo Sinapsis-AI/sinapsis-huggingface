@@ -10,7 +10,11 @@ from PIL import Image
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base.base_models import TemplateAttributeType
 
+from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.base_diffusers import BaseDiffusers
+
+ImageToImageDiffusersUIProperties = BaseDiffusers.UIProperties
+ImageToImageDiffusersUIProperties.tags.extend([Tags.IMAGE, Tags.IMAGE_GENERATION, Tags.IMAGE_TO_IMAGE])
 
 
 class ImageToImageDiffusers(BaseDiffusers):
@@ -45,6 +49,8 @@ class ImageToImageDiffusers(BaseDiffusers):
 
 
     """
+
+    UIProperties = ImageToImageDiffusersUIProperties
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

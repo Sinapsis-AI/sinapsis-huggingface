@@ -3,11 +3,11 @@ from typing import Any
 
 import gradio as gr
 import numpy as np
-from diffusers_demo import needs_input_output
 from sinapsis.webapp.agent_gradio_helper import (
     add_logo_and_title,
     css_header,
 )
+from sinapsis_core.agent.builder import load_yaml_config
 from sinapsis_core.cli.run_agent_from_config import generic_agent_builder
 from sinapsis_core.data_containers.data_packet import (
     DataContainer,
@@ -20,6 +20,22 @@ CONFIGS_DIR = "packages/sinapsis_huggingface_transformers/src/sinapsis_huggingfa
 CONFIG_NAME = "pali_gemma_detection.yml"
 DEFAULT_CONF = CONFIGS_DIR + CONFIG_NAME
 CONFIG_FILE = AGENT_CONFIG_PATH or DEFAULT_CONF
+
+
+def needs_input_output(config_path: str, template_names: tuple[str, ...]) -> bool:
+    """
+    Determines if the diffusion pipeline requires an input image based on the configuration.
+
+    Args:
+        config_path (str): Path to the YAML configuration file.
+        template_names (tuple[str]): Names of templates to check if are present in the configuration.
+
+    Returns:
+        bool: True if the model requires an input image (Image2Image or Inpainting),
+              False otherwise.
+    """
+    config = load_yaml_config(config_path)
+    return any(template["class_name"] in template_names for template in config["templates"])
 
 
 def build_demo(config_path: str = CONFIG_FILE) -> gr.Blocks:

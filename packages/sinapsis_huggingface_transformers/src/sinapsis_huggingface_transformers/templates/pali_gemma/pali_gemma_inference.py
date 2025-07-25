@@ -5,11 +5,15 @@ from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotati
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base.base_models import TemplateAttributeType
 from sinapsis_data_visualization.helpers.detection_utils import bbox_xyxy_to_xywh
+from sinapsis_huggingface_transformers.helpers.tags import Tags
 from sinapsis_huggingface_transformers.templates.pali_gemma.pali_gemma_base import (
     PaliGemmaBase,
     PaliGemmaBaseAttributes,
 )
 from transformers.generation.utils import GenerateOutput
+
+PaliGemmaInferenceUIProperties = PaliGemmaBase.UIProperties
+PaliGemmaInferenceUIProperties.tags.extend([Tags.CAPTION_GENERATION, Tags.OBJECT_DETECTION, Tags.INFERENCE])
 
 
 class PaliGemmaInferenceAttributes(PaliGemmaBaseAttributes):
@@ -61,6 +65,7 @@ class PaliGemmaInference(PaliGemmaBase):
 
     AttributesBaseModel = PaliGemmaInferenceAttributes
     INPUT_IDS = "input_ids"
+    UIProperties = PaliGemmaInferenceUIProperties
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

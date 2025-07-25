@@ -2,12 +2,17 @@
 
 
 from sinapsis_core.data_containers.data_packet import DataContainer
-from sinapsis_core.template_base.base_models import TemplateAttributeType
+from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType
 
+from sinapsis_huggingface_transformers.helpers.tags import Tags
 from sinapsis_huggingface_transformers.templates.base_transformers import (
     TransformersBase,
     TransformersBaseAttributes,
 )
+
+TranslationTransformersUIProperties = TransformersBase.UIProperties
+TranslationTransformersUIProperties.output_type = OutputTypes.TEXT
+TranslationTransformersUIProperties.tags.extend([Tags.LANGUAGE, Tags.TRANSLATION])
 
 
 class TranslationTransformersAttributes(TransformersBaseAttributes):
@@ -52,6 +57,7 @@ class TranslationTransformers(TransformersBase):
 
     AttributesBaseModel = TranslationTransformersAttributes
     TRANSLATION_TEXT_KEY = "translation_text"
+    UIProperties = TranslationTransformersUIProperties
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
