@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-huggingface-embeddings"
-version = "0.1.5"
+version = "0.1.6"
 description = "Templates to generate and/or extract text and image embeddings using HuggingFace"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
