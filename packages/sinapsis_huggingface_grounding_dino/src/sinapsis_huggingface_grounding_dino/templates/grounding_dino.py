@@ -359,6 +359,7 @@ class GroundingDINO(Template):
         """
         if self.attributes.device == "cuda":
             torch.cuda.empty_cache()
+            torch.cuda.ipc_collect()
 
     def reset_state(self, template_name: str | None = None) -> None:
         self._clear_memory()

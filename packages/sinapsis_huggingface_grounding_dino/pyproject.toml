@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-huggingface-grounding-dino"
-version = "0.1.6"
+version = "0.1.7"
 description = "Templates for GroundingDINO with HuggingFace"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
