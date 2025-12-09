@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import gc
 from abc import abstractmethod
 from typing import Any, ClassVar, Literal
 
@@ -32,7 +33,7 @@ class PaliGemmaBaseAttributes(TemplateAttributes):
         torch_dtype (Literal["float16", "float32"]): Model precision type. Defaults to float16.
     """
 
-    model_path: str
+    model_path: Literal["google/paligemma2-3b-pt-224"] = "google/paligemma2-3b-pt-224"
     processor_path: str
     model_cache_dir: str = str(SINAPSIS_CACHE_DIR)
     device: Literal["cuda", "cpu"] = "cpu"
@@ -53,6 +54,14 @@ class PaliGemmaBase(Template):
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
+        self.initialize()
+
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state. Can be overriden by subclasses for specific behaviour.
+        """
         self.model = self._setup_model()
         self.processor = self._setup_processor()
 
@@ -104,7 +113,24 @@ class PaliGemmaBase(Template):
         """
 
     def reset_state(self, template_name: str | None = None) -> None:
-        if self.attributes.device == "cuda":
+        """Releases the model and processor from memory and re-instantiates the template.
+
+        Args:
+            template_name (str | None, optional): The name of the template instance being reset. Defaults to None.
+        """
+        _ = template_name
+
+        if hasattr(self, "model"):
+            self.model.to("cpu")
+            del self.model
+
+        if hasattr(self, "processor"):
+            del self.processor
+
+        gc.collect()
+
+        if torch.cuda.is_available():
             torch.cuda.empty_cache()
-            torch.cuda.ipc_collect()
-        super().reset_state(template_name)
+
+        self.initialize()
+        self.logger.info(f"Reset template instance `{self.instance_name}`")

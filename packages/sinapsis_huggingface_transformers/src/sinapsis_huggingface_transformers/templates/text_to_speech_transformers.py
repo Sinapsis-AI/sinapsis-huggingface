@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from typing import Literal
 
 import numpy as np
 import torch
 from sinapsis_core.data_containers.data_packet import AudioPacket, DataContainer, TextPacket
-from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import OutputTypes
 
 from sinapsis_huggingface_transformers.helpers import sentences_to_n_words, split_text_into_sentences
 from sinapsis_huggingface_transformers.helpers.tags import Tags
@@ -31,14 +32,15 @@ class TextToSpeechAttributes(TransformersBaseAttributes):
             based on punctuation.
     """
 
+    model_path: Literal["suno/bark", "suno/bark-small", "ResembleAI/chatterbox"] = "suno/bark"
+
     use_embeddings: bool = False
     sample_rate: int | None = None
     n_words: int | None = None
 
 
 class TextToSpeechTransformers(TransformersBase):
-    """
-    The template generates an audio from a prompt that is passed
+    """The template generates an audio from a prompt that is passed
     through the text packet in the DataContainer.
     It uses the transformers architecture and a HuggingFace model to
     produce the audio. Finally, it sends the audio through the DataContainer
@@ -66,10 +68,16 @@ class TextToSpeechTransformers(TransformersBase):
     """
 
     AttributesBaseModel = TextToSpeechAttributes
+    SAMPLE_RATE_KEY = "sampling_rate"
     UIProperties = TextToSpeechTransformersUIProperties
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state.
+        """
+        super().initialize()
         self.task = "text-to-speech"
         self.setup_pipeline()
         self.sample_rate = self._get_sample_rate()
@@ -90,7 +98,7 @@ class TextToSpeechTransformers(TransformersBase):
             else {}
         )
         output = self.pipeline("Fetching sampling rate.", forward_params=forward_params)
-        sample_rate = output.get("sampling_rate", 16000)
+        sample_rate = output.get(self.SAMPLE_RATE_KEY, 16000)
 
         return sample_rate
 
@@ -128,7 +136,9 @@ class TextToSpeechTransformers(TransformersBase):
             else {}
         )
         for chunk in sentences:
-            output = self.pipeline(chunk, forward_params=forward_params, **self.attributes.inference_kwargs)
+            output = self.pipeline(
+                chunk, forward_params=forward_params, **self.attributes.inference_kwargs.model_dump(exclude_none=True)
+            )
             total_audio.append(output["audio"][0] if output["audio"].ndim == 2 else output["audio"])
         if total_audio:
             total_audio = np.concatenate(total_audio)

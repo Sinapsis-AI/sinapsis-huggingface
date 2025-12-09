@@ -1,15 +1,43 @@
 # -*- coding: utf-8 -*-
+from typing import Literal
 
 from diffusers import I2VGenXLPipeline
-from sinapsis_core.template_base.base_models import TemplateAttributeType
+from pydantic import Field
 
 from sinapsis_huggingface_diffusers.helpers.tags import Tags
+from sinapsis_huggingface_diffusers.templates.base_diffusers import BaseDiffusersAttributes, BaseGenerationParams
 from sinapsis_huggingface_diffusers.templates.image_to_image_diffusers import (
     ImageToImageDiffusers,
 )
 
 ImageToVideoGenXLDiffusersUIProperties = ImageToImageDiffusers.UIProperties
 ImageToVideoGenXLDiffusersUIProperties.tags.extend([Tags.VIDEO, Tags.IMAGE_TO_VIDEO])
+
+
+class ImageToVideoGenerationParams(BaseGenerationParams):
+    """Defines the specific parameters for image-to-video generation pipelines.
+
+    Attributes:
+        target_fps (int | None): The target frames per second for the generated video.
+        num_frames (int | None): The total number of frames to generate in the video. Defaults to 16.
+        num_videos_per_prompt (int | None): The number of different videos to generate
+            from the same input image and prompt.
+    """
+
+    target_fps: int | None = None
+    num_frames: int | None = 16
+    num_videos_per_prompt: int | None = None
+
+
+class ImageToVideoGenXLDiffusersAttributes(BaseDiffusersAttributes):
+    """Defines the complete set of attributes for the ImageToVideoGenXLDiffusers template.
+
+    Attributes:
+        generation_params (ImageToVideoGenerationParams): Task-specific parameters for
+            video generation, such as `num_frames` and `target_fps`.
+    """
+
+    generation_params: ImageToVideoGenerationParams = Field(default_factory=ImageToVideoGenerationParams)
 
 
 class ImageToVideoGenXLDiffusers(ImageToImageDiffusers):
@@ -42,14 +70,18 @@ class ImageToVideoGenXLDiffusers(ImageToImageDiffusers):
 
     """
 
+    AttributesBaseModel = ImageToVideoGenXLDiffusersAttributes
     UIProperties = ImageToVideoGenXLDiffusersUIProperties
-    DEFAULT_NUM_FRAMES = 16
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
-        self.num_duplicates = self.attributes.generation_params.get("num_frames", self.DEFAULT_NUM_FRAMES)
-        self.requires_pil = True
-        self.output_attribute = "frames"
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state. Can be overriden by subclasses for specific behaviour.
+        """
+        super().initialize()
+        self.output_attribute: Literal["images", "frames"] = "frames"
+        self.num_duplicates = self.attributes.generation_params.num_frames
 
     @staticmethod
     def _pipeline_class() -> I2VGenXLPipeline:

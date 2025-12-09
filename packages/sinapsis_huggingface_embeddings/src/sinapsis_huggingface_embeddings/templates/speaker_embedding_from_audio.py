@@ -3,6 +3,7 @@
 import io
 from typing import Literal
 
+import numpy as np
 import soundfile as sf
 import torch
 import torch.nn.functional as F
@@ -89,7 +90,7 @@ class SpeakerEmbeddingFromAudio(Template):
         return EncoderClassifier.from_hparams(source=self.attributes.model_path, savedir=self.attributes.data_cache_dir)
 
     @staticmethod
-    def _postprocess_speaker_embedding(speaker_embedding: torch.Tensor) -> list[float]:
+    def _postprocess_speaker_embedding(speaker_embedding: torch.Tensor) -> np.ndarray:
         """Normalize and convert the speaker embedding tensor into a list of floats.
 
         Args:
@@ -99,7 +100,7 @@ class SpeakerEmbeddingFromAudio(Template):
             list[float]: A normalized and flattened embedding as a list of floats.
         """
         speaker_embedding = F.normalize(speaker_embedding, dim=2)
-        speaker_embedding_list: list[float] = speaker_embedding.squeeze().tolist()
+        speaker_embedding_list: np.ndarray = speaker_embedding.detach().numpy().squeeze()
         return speaker_embedding_list
 
     @staticmethod
@@ -158,14 +159,13 @@ class SpeakerEmbeddingFromAudio(Template):
 
         if len(container.audios) == 1:
             for packet in packets:
-                packet.embedding = embeddings[0]
+                packet.embedding = [embeddings[0]]
         elif len(container.audios) == len(packets):
             for packet, embedding in zip(packets, embeddings):
-                packet.embedding = embedding
+                packet.embedding = [embedding]
         else:
             raise ValueError(
                 "Mismatch between the number of audio packets and target packets. "
                 "Ensure either a single audio or matching numbers of audios and target packets."
             )
-
         return container

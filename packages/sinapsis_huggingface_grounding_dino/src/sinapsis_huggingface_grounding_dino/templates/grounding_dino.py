@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-
+import gc
 from typing import Any, Literal
 
 import torch
@@ -43,7 +42,7 @@ class GroundingBaseAttributes(TemplateAttributes):
         device (Literal["cuda", "cpu"]): Device to be used for inference.
     """
 
-    model_path: str
+    model_path: Literal["IDEA-Research/grounding-dino-base"] = "IDEA-Research/grounding-dino-base"
     model_cache_dir: str = str(SINAPSIS_CACHE_DIR)
     inference_mode: Literal["object_detection", "zero_shot"]
     threshold: float = 0.25
@@ -112,11 +111,18 @@ class GroundingDINO(Template):
             attributes (dict[str, Any]): Dictionary containing configuration parameters.
         """
         super().__init__(attributes)
-        self.device = self.attributes.device
+        self.initialize()
+
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state. Can be overriden by subclasses for specific behaviour.
+        """
         self.processor = AutoProcessor.from_pretrained(
             self.attributes.model_path, cache_dir=self.attributes.model_cache_dir
         )
-        self.model = self._set_model().to(self.device)
+        self.model = self._set_model().to(self.attributes.device)
         self.max_tokens = self.processor.tokenizer.model_max_length
         self.text_input = self.validate_and_format_text_input(self.attributes.text_input)
 
@@ -172,7 +178,7 @@ class GroundingDINO(Template):
             images=image_packet.content,
             text=self.text_input,
             return_tensors="pt",
-        ).to(self.device)
+        ).to(self.attributes.device)
 
         with torch.no_grad():
             outputs = self.model(**inputs)
@@ -351,16 +357,32 @@ class GroundingDINO(Template):
 
         return container
 
-    def _clear_memory(self) -> None:
+    @staticmethod
+    def clear_memory() -> None:
         """Clears memory to free up resources.
 
         This method performs garbage collection and clears GPU memory (if applicable) to prevent memory leaks
         and ensure efficient resource usage.
         """
-        if self.attributes.device == "cuda":
+        gc.collect()
+        if torch.cuda.is_available():
             torch.cuda.empty_cache()
-            torch.cuda.ipc_collect()
 
     def reset_state(self, template_name: str | None = None) -> None:
-        self._clear_memory()
-        super().reset_state(template_name)
+        """Releases the pipeline and processor from memory and re-instantiates the template.
+
+        Args:
+            template_name (str | None, optional): The name of the template instance being reset. Defaults to None.
+        """
+        _ = template_name
+
+        if hasattr(self, "model") and self.model is not None:
+            self.model.to("cpu")
+            del self.model
+
+        if hasattr(self, "processor"):
+            del self.processor
+
+        self.clear_memory()
+        self.initialize()
+        self.logger.info(f"Reset template instance `{self.instance_name}`")

@@ -30,6 +30,7 @@ This repo consists of different packages to handle huggingface tools for differe
 * <code>sinapsis-huggingface-embeddings</code>
 * <code>sinapsis-huggingface-grounding-dino</code>
 * <code>sinapsis-huggingface-transformers</code>
+* <code>sinapsis-huggingface-hub</code>
 
 Install using your package manager of choice. We encourage the use of <code>uv</code>
 
@@ -118,6 +119,17 @@ This sinapsis package offers advanced capabilities for **text, speech, and image
 - **Image-to-Text Template**: Generate textual descriptions from input images.
 
 For more details and specific templates, see the [README.md](https://github.com/Sinapsis-AI/sinapsis-huggingface/blob/main/packages/sinapsis_huggingface_transformers/README.md).
+
+</details>
+
+<details>
+<summary id="uv"><strong><span style="font-size: 1.4em;">Sinapsis Hugging Face Hub</span></strong></summary>
+
+This sinapsis package offers templates to manage **datasets**, **models** and **spaces** with the Hugging Face Hub library. Currently it offers:
+
+- **HuggingFaceDownloader**: Downloads a repository snapshot from the Hugging Face Hub.
+
+For more details and specific templates, see the [README.md](https://github.com/Sinapsis-AI/sinapsis-huggingface/blob/main/packages/sinapsis_huggingface_hub/README.md).
 
 </details>
 

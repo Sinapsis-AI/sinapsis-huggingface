@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 from diffusers import AutoPipelineForInpainting
 from sinapsis_core.data_containers.data_packet import ImageAnnotations, ImagePacket
-from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.base_diffusers import (
@@ -75,8 +74,13 @@ class InpaintingDiffusers(ImageToImageDiffusers):
     UIProperties = InpaintingDiffusersUIProperties
     AttributesBaseModel = InpaintingDiffusersAttributes
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state. Can be overriden by subclasses for specific behaviour.
+        """
+        super().initialize()
         if self.attributes.preserve_outside_content and self.attributes.dilation_radius is None:
             raise ValueError("Need to specify a dilation_radius if preserve_outside_content=True")
 
@@ -327,6 +331,6 @@ class InpaintingDiffusers(ImageToImageDiffusers):
             if old_packet.annotations:
                 new_packet.annotations = old_packet.annotations
                 for ann in new_packet.annotations:
-                    ann.label_str = str(self.attributes.generation_params.get("prompt"))
+                    ann.label_str = str(self.attributes.generation_params.prompt)
 
         return new_packets, old_packets

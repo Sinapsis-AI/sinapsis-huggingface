@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
+from typing import Literal
 
 import numpy as np
+from pydantic import Field
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
-from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import OutputTypes
 
 from sinapsis_huggingface_transformers.helpers.tags import Tags
-from sinapsis_huggingface_transformers.templates.base_transformers import TransformersBase
+from sinapsis_huggingface_transformers.templates.base_transformers import (
+    BaseInferenceKwargs,
+    TransformersBase,
+    TransformersBaseAttributes,
+)
 
 SpeechToTextTransformersUIProperties = TransformersBase.UIProperties
 SpeechToTextTransformersUIProperties.output_type = OutputTypes.TEXT
@@ -14,9 +20,33 @@ SpeechToTextTransformersUIProperties.tags.extend(
 )
 
 
-class SpeechToTextTransformers(TransformersBase):
+class SpeechToTextInferenceKwargs(BaseInferenceKwargs):
+    """Specific keyword arguments for the automatic-speech-recognition pipeline.
+
+    Attributes:
+        return_timestamps (Literal["char", "word"] | bool | None ): If set, controls the granularity of
+            timestamps returned with the transcribed text. Can be "char", "word", or True for segments.
     """
-    Template to perform speech-to-text actions
+
+    return_timestamps: Literal["char", "word"] | bool | None = None
+
+
+class SpeechToTextTransformersAttributes(TransformersBaseAttributes):
+    """Defines the set of attributes for the SpeechToTextTransformers template.
+
+    Inherits general transformer settings from TransformersBaseAttributes.
+
+    Attributes:
+        inference_kwargs (SpeechToTextInferenceKwargs): Task-specific parameters for the speech-to-text pipeline,
+            such as `return_timestamps`.
+    """
+
+    model_path: Literal["openai/whisper-small"] = "openai/whisper-small"
+    inference_kwargs: SpeechToTextInferenceKwargs = Field(default_factory=SpeechToTextInferenceKwargs)
+
+
+class SpeechToTextTransformers(TransformersBase):
+    """Template to perform speech-to-text actions
     using the HuggingFace module through the 'transformers' architecture.
 
     The template takes an Audio from the DataContainer and uses a speech-recognition
@@ -41,11 +71,17 @@ class SpeechToTextTransformers(TransformersBase):
 
     """
 
+    AttributesBaseModel = SpeechToTextTransformersAttributes
     TEXT_KEY = "text"
     UIProperties = SpeechToTextTransformersUIProperties
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state.
+        """
+        super().initialize()
         self.task = "automatic-speech-recognition"
         self.setup_pipeline()
 
@@ -61,11 +97,15 @@ class SpeechToTextTransformers(TransformersBase):
         for audio_packet in container.audios:
             audio = audio_packet.content
             audio = audio.astype(np.float32)
-            transcribed_text = self.pipeline(audio, **self.attributes.inference_kwargs)[self.TEXT_KEY]
-            transcribed_text_textpacket = TextPacket(
-                content=transcribed_text,
-                source=audio_packet.source,
-            )
-            self.logger.info(f"Speech-to-text transcription: {transcribed_text}")
-            container.texts.append(transcribed_text_textpacket)
+            results = self.pipeline(audio, **self.attributes.inference_kwargs.model_dump(exclude_none=True))
+            if results:
+                transcribed_text = results.get(self.TEXT_KEY)
+                if transcribed_text:
+                    self.logger.info(f"Speech-to-text transcription: {transcribed_text}")
+                    container.texts.append(
+                        TextPacket(
+                            content=transcribed_text,
+                            source=audio_packet.source,
+                        )
+                    )
         return container

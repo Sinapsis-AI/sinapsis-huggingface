@@ -1,21 +1,53 @@
 # -*- coding: utf-8 -*-
 
+from typing import Literal
+
 import numpy as np
 from PIL import Image
+from pydantic import Field
 from sinapsis_core.data_containers.data_packet import DataContainer, TextPacket
-from sinapsis_core.template_base.base_models import OutputTypes, TemplateAttributeType
+from sinapsis_core.template_base.base_models import OutputTypes
 
 from sinapsis_huggingface_transformers.helpers.tags import Tags
-from sinapsis_huggingface_transformers.templates.base_transformers import TransformersBase
+from sinapsis_huggingface_transformers.templates.base_transformers import (
+    BaseInferenceKwargs,
+    TransformersBase,
+    TransformersBaseAttributes,
+)
 
 ImageToTextTransformersUIProperties = TransformersBase.UIProperties
 ImageToTextTransformersUIProperties.output_type = OutputTypes.TEXT
 ImageToTextTransformersUIProperties.tags.extend([Tags.IMAGE, Tags.TEXT, Tags.IMAGE_TO_TEXT])
 
 
-class ImageToTextTransformers(TransformersBase):
+class ImageToTextInferenceKwargs(BaseInferenceKwargs):
+    """Specific keyword arguments for the image-to-text pipeline.
+
+    Attributes:
+        max_new_tokens (int | None): The maximum number of tokens to generate in the description.
+        timeout (float | None): The maximum time in seconds to wait for fetching images from the web.
     """
-    ImageToTextTransformers template to generate text from an image.
+
+    max_new_tokens: int | None = None
+    timeout: float | None = None
+
+
+class ImageToTextTransformersAttributes(TransformersBaseAttributes):
+    """Defines the complete set of attributes for the ImageToTextTransformers template.
+
+    Inherits general transformer settings from TransformersBaseAttributes.
+
+    Attributes:
+        inference_kwargs (ImageToTextInferenceKwargs): Task-specific parameters for the image-to-text pipeline,
+            such as `max_new_tokens`.
+    """
+
+    model_path: Literal["microsoft/trocr-base-handwritten"] = "microsoft/trocr-base-handwritten"
+    inference_kwargs: ImageToTextInferenceKwargs = Field(default_factory=ImageToTextInferenceKwargs)
+
+
+class ImageToTextTransformers(TransformersBase):
+    """ImageToTextTransformers template to generate text from an image.
 
     This template uses a Hugging Face Transformers pipeline to generate textual descriptions
     from input images.
@@ -38,11 +70,17 @@ class ImageToTextTransformers(TransformersBase):
 
     """
 
+    AttributesBaseModel = ImageToTextTransformersAttributes
     GENERATED_TEXT_KEY = "generated_text"
     UIProperties = ImageToTextTransformersUIProperties
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state.
+        """
+        super().initialize()
         self.task = "image-to-text"
         self.setup_pipeline()
 
@@ -74,7 +112,9 @@ class ImageToTextTransformers(TransformersBase):
         """
         for image_packet in container.images:
             image = self._convert_to_pil(image_packet.content)
-            text_description = self.pipeline(image, **self.attributes.inference_kwargs)[0][self.GENERATED_TEXT_KEY]
-            text_packet = TextPacket(content=text_description)
-            container.texts.append(text_packet)
+            results = self.pipeline(image, **self.attributes.inference_kwargs.model_dump(exclude_none=True))
+            if results:
+                text_description = results[0].get(self.GENERATED_TEXT_KEY)
+                if text_description:
+                    container.texts.append(TextPacket(content=text_description))
         return container

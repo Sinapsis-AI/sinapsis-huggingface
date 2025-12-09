@@ -2,7 +2,6 @@
 from dataclasses import dataclass
 
 from sinapsis_core.data_containers.annotations import ImageAnnotations
-from sinapsis_core.template_base.base_models import TemplateAttributeType
 from sinapsis_huggingface_transformers.templates.pali_gemma.pali_gemma_inference import (
     PaliGemmaInference,
     PaliGemmaInferenceAttributes,
@@ -66,9 +65,13 @@ class PaliGemmaDetection(PaliGemmaInference):
     AttributesBaseModel = PaliGemmaDetectionAttributes
     KEYS = PaliGemmaDetectionKeys
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
 
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state.
+        """
+        super().initialize()
         objects_str = self.initialize_objects_str()
         self.prompt = self.KEYS.detection_prompt.format(objects_str)
 

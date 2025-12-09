@@ -3,7 +3,6 @@ import numpy as np
 import torch
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base.base_models import TemplateAttributeType
 from sinapsis_data_visualization.helpers.detection_utils import bbox_xyxy_to_xywh
 from sinapsis_huggingface_transformers.helpers.tags import Tags
 from sinapsis_huggingface_transformers.templates.pali_gemma.pali_gemma_base import (
@@ -67,8 +66,14 @@ class PaliGemmaInference(PaliGemmaBase):
     INPUT_IDS = "input_ids"
     UIProperties = PaliGemmaInferenceUIProperties
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state.
+        """
+        super().initialize()
+        self.model = self.model.eval()
         self.prompt = self.attributes.prompt
 
     def _prepare_inputs(self, image_content: np.ndarray) -> dict:
@@ -237,11 +242,12 @@ class PaliGemmaInference(PaliGemmaBase):
         Returns:
             DataContainer: Processed container with added annotations
         """
+        self.logger.debug("EXECUTING TEMPLATE")
         if container.texts:
             self.process_from_text_packet(container)
         else:
             self.process_from_prompt(container)
-
+        self.logger.debug("finished execution")
         return container
 
     @staticmethod

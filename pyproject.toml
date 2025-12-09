@@ -1,6 +1,6 @@
 [project]
 name = "sinapsis-huggingface"
-version = "0.2.7"
+version = "0.2.15"
 description = "Package for HuggingFace-based templates"
 authors = [
     {name = "SinapsisAI", email = "dev@sinapsis.tech"},
@@ -28,6 +28,7 @@ all = [
     "sinapsis-huggingface-embeddings",
     "sinapsis-huggingface-grounding-dino",
     "sinapsis-huggingface-transformers",
+    "sinapsis-huggingface-hub[all]",
     "sinapsis-huggingface[gradio-app,sinapsis-data-writers]",
 ]
 sinapsis-data-writers = [
@@ -52,6 +53,7 @@ sinapsis-huggingface-transformers= {workspace = true}
 sinapsis-huggingface-embeddings = {workspace = true}
 sinapsis-huggingface-grounding-dino = { workspace = true }
 sinapsis-huggingface-diffusers = { workspace = true }
+sinapsis-huggingface-hub = { workspace = true }
 sinapsis-huggingface = { workspace = true }
 
 [[tool.uv.index]]

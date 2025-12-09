@@ -80,6 +80,6 @@ class TextToImageDiffusers(BaseDiffusers):
         image_packets = [ImagePacket(content=image) for image in generated_images]
         self._set_packet_sources(image_packets)
         self._update_images_in_container(container, image_packets)
-        self._clear_memory()
+        self.clear_memory()
 
         return container

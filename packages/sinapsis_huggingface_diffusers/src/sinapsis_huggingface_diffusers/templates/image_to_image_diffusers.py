@@ -8,7 +8,6 @@ import numpy as np
 from diffusers import AutoPipelineForImage2Image
 from PIL import Image
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
-from sinapsis_core.template_base.base_models import TemplateAttributeType
 
 from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.base_diffusers import BaseDiffusers
@@ -52,9 +51,13 @@ class ImageToImageDiffusers(BaseDiffusers):
 
     UIProperties = ImageToImageDiffusersUIProperties
 
-    def __init__(self, attributes: TemplateAttributeType) -> None:
-        super().__init__(attributes)
-        self.requires_pil = False
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state. Can be overriden by subclasses for specific behaviour.
+        """
+        super().initialize()
         self.output_attribute: Literal["images", "frames"] = "images"
         self.num_duplicates = self.num_images_per_prompt
 
@@ -67,7 +70,8 @@ class ImageToImageDiffusers(BaseDiffusers):
         """
         return AutoPipelineForImage2Image
 
-    def _convert_image_format(self, image_packet: ImagePacket) -> np.ndarray | Image.Image:
+    @staticmethod
+    def _convert_image_format(image_packet: ImagePacket) -> Image.Image:
         """Converts the input image into the appropriate format for the pipeline.
 
         The format depends on the `requires_pil` attribute:
@@ -78,12 +82,9 @@ class ImageToImageDiffusers(BaseDiffusers):
             image_packet (ImagePacket): The input image packet.
 
         Returns:
-            np.ndarray | Image.Image: The converted image, either as a normalized NumPy array or a
-                PIL Image.
+            Image.Image: The converted image as a PIL Image.
         """
-        if self.requires_pil:
-            return Image.fromarray(image_packet.content)
-        return image_packet.content / 255.0
+        return Image.fromarray(image_packet.content)
 
     def preprocess_inputs(self, image_packet: ImagePacket) -> dict[str, np.ndarray | list[np.ndarray]]:
         """Prepares the input image for the image-to-image pipeline.
@@ -157,6 +158,6 @@ class ImageToImageDiffusers(BaseDiffusers):
         new_packets = [ImagePacket(content=image) for image in all_generated_images]
         processed_packets, _ = self.post_processing_packets(new_packets, old_packets)
         self._update_images_in_container(container, processed_packets)
-        self._clear_memory()
+        self.clear_memory()
 
         return container

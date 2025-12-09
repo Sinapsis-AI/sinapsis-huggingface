@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import gc
 import random
 from abc import abstractmethod
 from typing import Any, Literal
 
 import torch
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
 from sinapsis_core.template_base.base_models import TemplateAttributes, TemplateAttributeType, UIPropertiesMetadata
@@ -14,6 +15,29 @@ from transformers import AutoProcessor, pipeline
 from transformers.pipelines import Pipeline
 
 from sinapsis_huggingface_transformers.helpers.tags import Tags
+
+
+class BaseInferenceKwargs(BaseModel):
+    """A flexible container for keyword arguments passed during inference.
+
+    Attributes:
+        generate_kwargs (dict[str, Any] | None): A dictionary of advanced parameters passed directly to the
+            model's `generate` method for fine-tuning the pipeline generation.
+    """
+
+    generate_kwargs: dict[str, Any] | None = None
+    model_config = ConfigDict(extra="allow")
+
+
+class PipelineKwargs(BaseModel):
+    """A flexible container for keyword arguments used to create the pipeline.
+
+    This model allows any extra parameters to be passed during pipeline instantiation.
+    """
+
+    device: Literal["cuda", "cpu"]
+    torch_dtype: Literal["float16", "float32", "auto"] = "float16"
+    model_config = ConfigDict(extra="allow")
 
 
 class TransformersBaseAttributes(TemplateAttributes):
@@ -30,20 +54,18 @@ class TransformersBaseAttributes(TemplateAttributes):
         seed (int | None): Random seed for reproducibility. If provided, this seed will ensure
             consistent results for pipelines that involve randomness. If not provided, a random seed
             will be generated internally.
-        pipeline_kwargs (dict[str, Any]): Keyword arguments passed during the instantiation of the
+        pipeline_kwargs (PipelineKwargs): Keyword arguments passed during the instantiation of the
             Hugging Face pipeline.
-        inference_kwargs (dict[str, Any]): Keyword arguments passed during the task execution or
+        inference_kwargs (BaseInferenceKwargs): Keyword arguments passed during the task execution or
             inference phase. These allow dynamic customization of the task, such as `max_length`
             and `min_length` for summarization, or `max_new_tokens` for image-to-text.
     """
 
     model_path: str
     model_cache_dir: str = str(SINAPSIS_CACHE_DIR)
-    device: Literal["cuda", "cpu"]
-    torch_dtype: Literal["float16", "float32"] = "float16"
     seed: int | None = None
-    pipeline_kwargs: dict[str, Any] = Field(default_factory=dict)
-    inference_kwargs: dict[str, Any] = Field(default_factory=dict)
+    pipeline_kwargs: PipelineKwargs = Field(default_factory=PipelineKwargs)
+    inference_kwargs: BaseInferenceKwargs = Field(default_factory=BaseInferenceKwargs)
 
 
 class TransformersBase(Template):
@@ -64,6 +86,14 @@ class TransformersBase(Template):
         super().__init__(attributes)
         self._TORCH_DTYPE = {"float16": torch.float16, "float32": torch.float32}
         self.task: str | None = None
+        self.initialize()
+
+    def initialize(self) -> None:
+        """Initializes the template's common state for creation or reset.
+
+        This method is called by both `__init__` and `reset_state` to ensure
+        a consistent state. Can be overriden by subclasses for specific behaviour.
+        """
         self._set_seed()
 
     def setup_pipeline(self) -> None:
@@ -114,9 +144,7 @@ class TransformersBase(Template):
         return pipeline(
             task=self.task,
             model=self.attributes.model_path,
-            device=self.attributes.device,
-            torch_dtype=self._TORCH_DTYPE.get(self.attributes.torch_dtype),
-            **self.attributes.pipeline_kwargs,
+            **self.attributes.pipeline_kwargs.model_dump(),
             **kwargs,
         )
 
@@ -147,7 +175,25 @@ class TransformersBase(Template):
         return transformed_data_container
 
     def reset_state(self, template_name: str | None = None) -> None:
-        if self.attributes.device == "cuda":
+        """Releases the pipeline and processor from memory and re-instantiates the template.
+
+        Args:
+            template_name (str | None, optional): The name of the template instance being reset. Defaults to None.
+        """
+        _ = template_name
+
+        if hasattr(self, "pipeline") and self.pipeline is not None:
+            if self.pipeline.model is not None:
+                self.pipeline.model.to("cpu")
+            del self.pipeline
+
+        if hasattr(self, "processor"):
+            del self.processor
+
+        gc.collect()
+
+        if torch.cuda.is_available():
             torch.cuda.empty_cache()
-            torch.cuda.ipc_collect()
-        super().reset_state(template_name)
+
+        self.initialize()
+        self.logger.info(f"Reset template instance `{self.instance_name}`")
