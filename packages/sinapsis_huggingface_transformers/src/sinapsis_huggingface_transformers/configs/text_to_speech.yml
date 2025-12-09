@@ -18,8 +18,9 @@ templates:
     template_input: TextInput
     attributes:
       model_path: suno/bark
-      device: cuda
-      torch_dtype: float32
+      pipeline_kwargs:
+        device: cuda
+        torch_dtype: float16
       n_words: 300
       seed: 7
       use_embeddings: false

@@ -18,6 +18,6 @@ templates:
     template_input: AudioReaderSoundfile
     attributes:
       model_path: "openai/whisper-small"
-      device: "cuda"
       pipeline_kwargs:
+        device: "cuda"
         chunk_length_s: 30
