@@ -10,6 +10,7 @@ _template_lookup = {
     "PaliGemmaInference": f"{_root_lib_path}.pali_gemma.pali_gemma_inference",
     "PaliGemmaSegmentation": f"{_root_lib_path}.pali_gemma.pali_gemma_segmentation",
     "SpeechToTextTransformers": f"{_root_lib_path}.speech_to_text_transformers",
+    "SentimentAnalysisTransformers": f"{_root_lib_path}.sentiment_analysis_transformers",
     "SummarizationTransformers": f"{_root_lib_path}.summarization_transformers",
     "TextToSpeechTransformers": f"{_root_lib_path}.text_to_speech_transformers",
     "TranslationTransformers": f"{_root_lib_path}.translation_transformers",

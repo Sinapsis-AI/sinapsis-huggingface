@@ -71,12 +71,7 @@ class BaseDiffusersAttributes(TemplateAttributes):
             Defaults to False.
     """
 
-    model_path: Literal[
-        "stable-diffusion-v1-5/stable-diffusion-v1-5",
-        "stabilityai/stable-diffusion-2-1",
-        "CompVis/stable-diffusion-v1-4",
-        "Qwen/Qwen-Image-Edit",
-    ] = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+    model_path: Literal["stable-diffusion-v1-5/stable-diffusion-v1-5", "stabilityai/stable-diffusion-2-1", "CompVis/stable-diffusion-v1-4", "Qwen/Qwen-Image-Edit"] = "stable-diffusion-v1-5/stable-diffusion-v1-5"
     model_cache_dir: str = str(SINAPSIS_CACHE_DIR)
     device: Literal["cuda", "cpu"]
     torch_dtype: Literal["float16", "float32"] = "float16"
