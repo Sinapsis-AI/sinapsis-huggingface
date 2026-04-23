@@ -1,4 +1,5 @@
 </h1>
+[![sp](https://img.shields.io/badge/lang-sp-red.svg)](https://github.com/Sinapsis-AI/sinapsis-huggingface/blob/main/README.es.md)
 <h1 align="center">
 <br>
 <br>
