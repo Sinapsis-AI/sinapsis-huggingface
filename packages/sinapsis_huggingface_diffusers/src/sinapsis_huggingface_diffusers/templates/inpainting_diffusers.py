@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
-from typing import Literal
+from typing import Any, Literal
 
 import cv2
 import numpy as np
 from diffusers import AutoPipelineForInpainting
+from PIL import Image
 from sinapsis_core.data_containers.data_packet import ImageAnnotations, ImagePacket
 
 from sinapsis_huggingface_diffusers.helpers.tags import Tags
@@ -17,7 +18,8 @@ from sinapsis_huggingface_diffusers.templates.image_to_image_diffusers import (
 )
 
 InpaintingDiffusersUIProperties = ImageToImageDiffusers.UIProperties
-InpaintingDiffusersUIProperties.tags.extend([Tags.INPAINTING, Tags.BBOX, Tags.MASK])
+if InpaintingDiffusersUIProperties.tags is not None:
+    InpaintingDiffusersUIProperties.tags.extend([Tags.INPAINTING, Tags.BBOX, Tags.MASK])
 
 
 class InpaintingDiffusersAttributes(BaseDiffusersAttributes):
@@ -73,6 +75,7 @@ class InpaintingDiffusers(ImageToImageDiffusers):
 
     UIProperties = InpaintingDiffusersUIProperties
     AttributesBaseModel = InpaintingDiffusersAttributes
+    attributes: InpaintingDiffusersAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.
@@ -85,7 +88,7 @@ class InpaintingDiffusers(ImageToImageDiffusers):
             raise ValueError("Need to specify a dilation_radius if preserve_outside_content=True")
 
     @staticmethod
-    def _pipeline_class() -> AutoPipelineForInpainting:
+    def _pipeline_class() -> Any:
         """Returns the `AutoPipelineForInpainting` class to be used for inpainting generation.
 
         Returns:
@@ -148,7 +151,7 @@ class InpaintingDiffusers(ImageToImageDiffusers):
                 if segmentation.polygon is not None:
                     for poly in segmentation.polygon:
                         polygon = np.array(poly, dtype=np.int32)
-                        cv2.fillPoly(mask, [polygon], 255)
+                        cv2.fillPoly(mask, [polygon], 255)  # ty: ignore[no-matching-overload]
 
         return mask
 
@@ -184,7 +187,7 @@ class InpaintingDiffusers(ImageToImageDiffusers):
 
         return mask
 
-    def preprocess_inputs(self, image_packet: ImagePacket) -> dict[str, np.ndarray | list[np.ndarray]]:
+    def preprocess_inputs(self, image_packet: ImagePacket) -> dict[str, list[Image.Image] | Image.Image]:
         """Prepares the input image and mask for the inpainting pipeline.
 
         This method extends the `ImageToImageDiffusers` preprocessing by adding a binary
@@ -194,17 +197,19 @@ class InpaintingDiffusers(ImageToImageDiffusers):
             image_packet (ImagePacket): The input image packet with content and annotations.
 
         Returns:
-            dict[str, np.ndarray | list[np.ndarray]]: A dictionary with the preprocessed image(s)
+            dict[str, list[Image.Image] | Image.Image]: A dictionary with the preprocessed image(s)
             and mask(s).
         """
         inputs = super().preprocess_inputs(image_packet)
         mask = self._generate_mask(image_packet)
-        inputs.update({"mask_image": ([mask] * self.num_images_per_prompt if self.num_images_per_prompt > 1 else mask)})
+        num_prompt = self.num_images_per_prompt
+        mask_update = {"mask_image": ([mask] * num_prompt if num_prompt > 1 else mask)}
+        inputs.update(mask_update)  # ty: ignore[no-matching-overload]
         return inputs
 
     @staticmethod
     def _update_annotations(
-        annotations: ImageAnnotations,
+        annotations: list[ImageAnnotations],
         old_w: int,
         old_h: int,
         new_w: int,
@@ -227,7 +232,7 @@ class InpaintingDiffusers(ImageToImageDiffusers):
                 ann.bbox.w = int(ann.bbox.w * new_w / old_w)
                 ann.bbox.h = int(ann.bbox.h * new_h / old_h)
 
-            if ann.segmentation:
+            if ann.segmentation is not None and ann.segmentation:
                 if ann.segmentation.mask is not None:
                     ann.segmentation.mask = cv2.resize(
                         ann.segmentation.mask,
@@ -237,13 +242,10 @@ class InpaintingDiffusers(ImageToImageDiffusers):
                 if ann.segmentation.polygon is not None:
                     ann.segmentation.polygon = [
                         [
-                            (
-                                int(pt[0] * new_w / old_w),
-                                int(pt[1] * new_h / old_h),
-                            )
-                            for pt in polygon
+                            int(pt[0] * new_w / old_w),
+                            int(pt[1] * new_h / old_h),
                         ]
-                        for polygon in ann.segmentation.polygon
+                        for pt in ann.segmentation.polygon
                     ]
 
     def _update_old_packets(self, old_packets: list[ImagePacket], new_packets: list[ImagePacket]) -> list[ImagePacket]:
@@ -285,7 +287,10 @@ class InpaintingDiffusers(ImageToImageDiffusers):
             np.ndarray: The blended content for the new packet.
         """
         min_dimension = min(mask.shape)
-        kernel_size = min(self.attributes.dilation_radius * 2 + 1, min_dimension)
+        if self.attributes.dilation_radius is not None:
+            kernel_size = min(self.attributes.dilation_radius * 2 + 1, min_dimension)
+        else:
+            kernel_size = min_dimension
         kernel = np.ones((kernel_size, kernel_size), np.uint8)
         dilated_mask = cv2.dilate(mask, kernel, iterations=1)
         dilated_mask = np.clip(dilated_mask, 0, 1).astype(bool)

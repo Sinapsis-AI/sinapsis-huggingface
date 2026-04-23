@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 The constants and methods declared in this file are inspired in the following source:
 
@@ -7,6 +8,8 @@ https://github.com/google/generative-ai-docs/blob/main/site/en/gemma/docs/palige
 which is Licensed under the Apache License, Version 2.0.
 
 """
+
+from typing import Any
 
 import numpy as np
 import regex as re
@@ -20,7 +23,7 @@ LOCATION_KEYS: tuple[str, ...] = ("y0", "x0", "y1", "x1")
 LOCATION_SCALE: float = 1024.0
 
 
-def parse_location_tokens(match_coord: re.Match, image_shape: tuple[int, ...]) -> np.ndarray:
+def parse_location_tokens(match_coord: Any, image_shape: tuple[int, ...]) -> np.ndarray:
     """Parses location tokens from model output into normalized coordinates.
 
     Args:
@@ -38,7 +41,7 @@ def parse_location_tokens(match_coord: re.Match, image_shape: tuple[int, ...]) -
     return np.array([x0, y0, x1, y1])
 
 
-def parse_label(match_coord: re.Match) -> str:
+def parse_label(match_coord: Any) -> str:
     """
     Retrieves detection label from a regex Match object.
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Literal
+from typing import Any, Literal
 
 from diffusers import I2VGenXLPipeline
 from pydantic import Field
@@ -11,7 +11,8 @@ from sinapsis_huggingface_diffusers.templates.image_to_image_diffusers import (
 )
 
 ImageToVideoGenXLDiffusersUIProperties = ImageToImageDiffusers.UIProperties
-ImageToVideoGenXLDiffusersUIProperties.tags.extend([Tags.VIDEO, Tags.IMAGE_TO_VIDEO])
+if ImageToVideoGenXLDiffusersUIProperties.tags is not None:
+    ImageToVideoGenXLDiffusersUIProperties.tags.extend([Tags.VIDEO, Tags.IMAGE_TO_VIDEO])
 
 
 class ImageToVideoGenerationParams(BaseGenerationParams):
@@ -72,6 +73,7 @@ class ImageToVideoGenXLDiffusers(ImageToImageDiffusers):
 
     AttributesBaseModel = ImageToVideoGenXLDiffusersAttributes
     UIProperties = ImageToVideoGenXLDiffusersUIProperties
+    attributes: ImageToVideoGenXLDiffusersAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.
@@ -84,7 +86,7 @@ class ImageToVideoGenXLDiffusers(ImageToImageDiffusers):
         self.num_duplicates = self.attributes.generation_params.num_frames
 
     @staticmethod
-    def _pipeline_class() -> I2VGenXLPipeline:
+    def _pipeline_class() -> Any:
         """Returns the I2VGenXLPipeline class to be used for the image-to-video generative task.
 
         This method specifies the pipeline class required for image-to-video tasks. It ensures the

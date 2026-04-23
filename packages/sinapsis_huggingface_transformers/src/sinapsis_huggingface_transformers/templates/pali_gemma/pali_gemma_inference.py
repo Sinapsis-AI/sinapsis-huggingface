@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from typing import Any
+
 import numpy as np
 import torch
 from sinapsis_core.data_containers.annotations import BoundingBox, ImageAnnotations
@@ -12,7 +14,8 @@ from sinapsis_huggingface_transformers.templates.pali_gemma.pali_gemma_base impo
 from transformers.generation.utils import GenerateOutput
 
 PaliGemmaInferenceUIProperties = PaliGemmaBase.UIProperties
-PaliGemmaInferenceUIProperties.tags.extend([Tags.CAPTION_GENERATION, Tags.OBJECT_DETECTION, Tags.INFERENCE])
+if PaliGemmaInferenceUIProperties.tags is not None:
+    PaliGemmaInferenceUIProperties.tags.extend([Tags.CAPTION_GENERATION, Tags.OBJECT_DETECTION, Tags.INFERENCE])
 
 
 class PaliGemmaInferenceAttributes(PaliGemmaBaseAttributes):
@@ -65,6 +68,7 @@ class PaliGemmaInference(PaliGemmaBase):
     AttributesBaseModel = PaliGemmaInferenceAttributes
     INPUT_IDS = "input_ids"
     UIProperties = PaliGemmaInferenceUIProperties
+    attributes: PaliGemmaInferenceAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.
@@ -99,7 +103,7 @@ class PaliGemmaInference(PaliGemmaBase):
             return_tensors="pt",
         ).to(self.attributes.device)
 
-    def _generate_caption(self, inputs: dict) -> torch.Tensor:
+    def _generate_caption(self, inputs: dict) -> Any:
         """Generates caption using the model.
 
         Args:
@@ -263,7 +267,7 @@ class PaliGemmaInference(PaliGemmaBase):
             ImageAnnotations: Annotation object with bounding box information
         """
         x0, y0, x1, y1 = coords
-        x, y, w, h = bbox_xyxy_to_xywh([x0, y0, x1, y1])
+        x, y, w, h = bbox_xyxy_to_xywh(np.asarray([x0, y0, x1, y1]))
         return ImageAnnotations(
             label_str=label,
             confidence_score=confidence,

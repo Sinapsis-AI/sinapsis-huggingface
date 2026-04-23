@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Any
 
 from diffusers import AutoPipelineForText2Image
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
@@ -7,7 +8,8 @@ from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.base_diffusers import BaseDiffusers
 
 TextToImageDiffusersUIProperties = BaseDiffusers.UIProperties
-TextToImageDiffusersUIProperties.tags.extend([Tags.TEXT, Tags.TEXT_TO_IMAGE, Tags.PROMPTS])
+if TextToImageDiffusersUIProperties.tags is not None:
+    TextToImageDiffusersUIProperties.tags.extend([Tags.TEXT, Tags.TEXT_TO_IMAGE, Tags.PROMPTS])
 
 
 class TextToImageDiffusers(BaseDiffusers):
@@ -41,7 +43,7 @@ class TextToImageDiffusers(BaseDiffusers):
     UIProperties = TextToImageDiffusersUIProperties
 
     @staticmethod
-    def _pipeline_class() -> AutoPipelineForText2Image:
+    def _pipeline_class() -> Any:
         """Returns the `AutoPipelineForText2Image` class to be used for text-to-image generation.
 
         This method specifies the pipeline class required for text-to-image tasks. It ensures the

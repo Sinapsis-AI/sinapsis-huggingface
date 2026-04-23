@@ -50,7 +50,7 @@ def build_demo(config_path: str = CONFIG_FILE) -> gr.Blocks:
     is_text_mode = needs_input_output(config_path, ("PaliGemmaInference",))
     agent = generic_agent_builder(config_path)
 
-    def process(image: Any, text: str) -> np.ndarray | None:
+    def process(image: Any, text: str) -> np.ndarray | str | None:
         """Processes image and text input through the PaliGemma2 model.
 
         Args:
@@ -73,6 +73,10 @@ def build_demo(config_path: str = CONFIG_FILE) -> gr.Blocks:
         container.texts = [TextPacket(content=text, source="live_stream")]
 
         result = agent(container)
+        if result is None:
+            return
+        if not isinstance(result, DataContainer):
+            return
 
         if is_text_mode:
             return result.images[0].annotations[0].text
@@ -98,4 +102,4 @@ def build_demo(config_path: str = CONFIG_FILE) -> gr.Blocks:
 
 if __name__ == "__main__":
     demo = build_demo()
-    demo.launch(share=GRADIO_SHARE_APP)
+    demo.launch(share=bool(GRADIO_SHARE_APP))

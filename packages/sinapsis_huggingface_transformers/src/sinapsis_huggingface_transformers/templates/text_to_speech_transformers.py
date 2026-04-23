@@ -15,7 +15,8 @@ from sinapsis_huggingface_transformers.templates.base_transformers import (
 
 TextToSpeechTransformersUIProperties = TransformersBase.UIProperties
 TextToSpeechTransformersUIProperties.output_type = OutputTypes.AUDIO
-TextToSpeechTransformersUIProperties.tags.extend([Tags.AUDIO, Tags.TEXT, Tags.TEXT_TO_SPEECH])
+if TextToSpeechTransformersUIProperties.tags is not None:
+    TextToSpeechTransformersUIProperties.tags.extend([Tags.AUDIO, Tags.TEXT, Tags.TEXT_TO_SPEECH])
 
 
 class TextToSpeechAttributes(TransformersBaseAttributes):
@@ -70,6 +71,7 @@ class TextToSpeechTransformers(TransformersBase):
     AttributesBaseModel = TextToSpeechAttributes
     SAMPLE_RATE_KEY = "sampling_rate"
     UIProperties = TextToSpeechTransformersUIProperties
+    attributes: TextToSpeechAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.

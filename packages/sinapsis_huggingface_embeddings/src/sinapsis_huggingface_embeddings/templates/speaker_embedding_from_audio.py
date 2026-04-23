@@ -76,6 +76,7 @@ class SpeakerEmbeddingFromAudio(Template):
         output_type=OutputTypes.AUDIO,
         tags=[Tags.EMBEDDINGS, Tags.HUGGINGFACE, Tags.MODELS, Tags.AUDIO, Tags.SPEAKER_EMBEDDING],
     )
+    attributes: SpeakerEmbeddingFromAudioAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -118,7 +119,8 @@ class SpeakerEmbeddingFromAudio(Template):
             audio, original_sample_rate = sf.read(io.BytesIO(audio_packet.content))
         else:
             audio = audio_packet.content
-            original_sample_rate = audio_packet.sample_rate
+            if audio_packet.sample_rate is not None:
+                original_sample_rate = audio_packet.sample_rate
 
         audio_tensor = torch.tensor(audio, dtype=torch.float32)
 

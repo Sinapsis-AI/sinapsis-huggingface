@@ -2,11 +2,12 @@
 
 import gc
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 import torch
 from diffusers import DiffusionPipeline
+from PIL import Image
 from pydantic import BaseModel, ConfigDict, Field
 from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.template_base import Template
@@ -71,7 +72,12 @@ class BaseDiffusersAttributes(TemplateAttributes):
             Defaults to False.
     """
 
-    model_path: Literal["stable-diffusion-v1-5/stable-diffusion-v1-5", "stabilityai/stable-diffusion-2-1", "CompVis/stable-diffusion-v1-4", "Qwen/Qwen-Image-Edit"] = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+    model_path: Literal[
+        "stable-diffusion-v1-5/stable-diffusion-v1-5",
+        "stabilityai/stable-diffusion-2-1",
+        "CompVis/stable-diffusion-v1-4",
+        "Qwen/Qwen-Image-Edit",
+    ] = "stable-diffusion-v1-5/stable-diffusion-v1-5"
     model_cache_dir: str = str(SINAPSIS_CACHE_DIR)
     device: Literal["cuda", "cpu"]
     torch_dtype: Literal["float16", "float32"] = "float16"
@@ -105,6 +111,7 @@ class BaseDiffusers(Template, ABC):
         tags=[Tags.HUGGINGFACE, Tags.DIFFUSERS, Tags.MODELS, Tags.GENERATIVE],
     )
     TORCH_DTYPE: dict = TorchTypes().model_dump()
+    attributes: BaseDiffusersAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -118,7 +125,7 @@ class BaseDiffusers(Template, ABC):
         """
         self.pipeline = self._make_pipeline()
         self.pipeline.set_progress_bar_config(disable=True)
-        self.num_images_per_prompt = self.attributes.generation_params.num_images_per_prompt
+        self.num_images_per_prompt: int = self.attributes.generation_params.num_images_per_prompt or 1
         self.generator = self._make_generator()
 
         if self.attributes.enable_model_cpu_offload:
@@ -151,7 +158,7 @@ class BaseDiffusers(Template, ABC):
 
         return [torch.Generator(device=self.attributes.device).manual_seed(s) for s in seeds]
 
-    def _make_pipeline(self) -> DiffusionPipeline:
+    def _make_pipeline(self) -> Any:
         """Creates and configures a diffusion pipeline for the generative task.
 
         This method initializes the diffusion pipeline using the specified model path, torch data type,
@@ -181,7 +188,7 @@ class BaseDiffusers(Template, ABC):
 
     def _generate_images(
         self,
-        inputs: dict[str, np.ndarray | list[np.ndarray]] | None = None,
+        inputs: dict[str, list[Image.Image] | Image.Image] | None = None,
         output_attribute: Literal["images", "frames"] = "images",
     ) -> list[np.ndarray]:
         """Generates images or frames using the configured diffusion pipeline.
@@ -190,7 +197,7 @@ class BaseDiffusers(Template, ABC):
         generating either images or frames, depending on the specified `output_attribute`.
 
         Args:
-            inputs (dict[str, np.ndarray  |  list[np.ndarray]], optional): A dictionary of input data for the pipeline.
+            inputs (dict[str, list[Image.Image] | Image.Image]], optional): A dictionary of input data for the pipeline.
                 Keys should match the expected input names for the pipeline (e.g., "image", "mask"). Defaults to {}.
             output_attribute (Literal["images", "frames"], optional): Specifies whether to extract
                 "images" or "frames", depending on the pipeline class used. Defaults to "images".

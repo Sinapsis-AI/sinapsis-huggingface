@@ -2,7 +2,7 @@
 
 import os
 from copy import deepcopy
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 from diffusers import AutoPipelineForImage2Image
@@ -13,7 +13,8 @@ from sinapsis_huggingface_diffusers.helpers.tags import Tags
 from sinapsis_huggingface_diffusers.templates.base_diffusers import BaseDiffusers
 
 ImageToImageDiffusersUIProperties = BaseDiffusers.UIProperties
-ImageToImageDiffusersUIProperties.tags.extend([Tags.IMAGE, Tags.IMAGE_GENERATION, Tags.IMAGE_TO_IMAGE])
+if ImageToImageDiffusersUIProperties.tags is not None:
+    ImageToImageDiffusersUIProperties.tags.extend([Tags.IMAGE, Tags.IMAGE_GENERATION, Tags.IMAGE_TO_IMAGE])
 
 
 class ImageToImageDiffusers(BaseDiffusers):
@@ -62,7 +63,7 @@ class ImageToImageDiffusers(BaseDiffusers):
         self.num_duplicates = self.num_images_per_prompt
 
     @staticmethod
-    def _pipeline_class() -> AutoPipelineForImage2Image:
+    def _pipeline_class() -> Any:
         """Returns the `AutoPipelineForImage2Image` class to be used for image-to-image generation.
 
         Returns:
@@ -86,7 +87,7 @@ class ImageToImageDiffusers(BaseDiffusers):
         """
         return Image.fromarray(image_packet.content)
 
-    def preprocess_inputs(self, image_packet: ImagePacket) -> dict[str, np.ndarray | list[np.ndarray]]:
+    def preprocess_inputs(self, image_packet: ImagePacket) -> dict[str, list[Image.Image] | Image.Image]:
         """Prepares the input image for the image-to-image pipeline.
 
         Normalizes the image to the range [0, 1]. Duplicates the image if multiple images per
@@ -96,7 +97,7 @@ class ImageToImageDiffusers(BaseDiffusers):
             image_packet (ImagePacket): The input image packet.
 
         Returns:
-            dict[str, np.ndarray | list[np.ndarray]]: A dictionary with the preprocessed image(s).
+           dict[str, list[Image.Image] | Image.Image]]: A dictionary with the preprocessed image(s).
         """
         input_image = self._convert_image_format(image_packet)
         inputs = {
@@ -127,7 +128,7 @@ class ImageToImageDiffusers(BaseDiffusers):
         if old_packets:
             old_packets = [deepcopy(old_packet) for old_packet in old_packets for _ in range(self.num_duplicates)]
             for new_packet, old_packet in zip(new_packets, old_packets):
-                filename = os.path.basename(old_packet.source).split(".")[0]
+                filename = os.path.basename(str(old_packet.source)).split(".")[0]
                 new_packet.source = f"{filename}_{new_packet.id!s}"
         return new_packets, old_packets
 

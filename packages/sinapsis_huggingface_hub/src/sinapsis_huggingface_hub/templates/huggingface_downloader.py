@@ -53,6 +53,7 @@ class HuggingFaceDownloader(Template):
         category="Hugging Face Hub",
         tags=[Tags.HUGGINGFACE, Tags.MODELS],
     )
+    attributes: HuggingFaceDownloaderAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)

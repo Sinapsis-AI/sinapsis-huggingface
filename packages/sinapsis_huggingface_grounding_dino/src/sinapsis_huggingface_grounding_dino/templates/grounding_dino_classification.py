@@ -9,7 +9,8 @@ from sinapsis_huggingface_grounding_dino.helpers.tags import Tags
 from sinapsis_huggingface_grounding_dino.templates.grounding_dino import GroundingBaseAttributes, GroundingDINO
 
 GroundingDINOClassificationUIProperties = GroundingDINO.UIProperties
-GroundingDINOClassificationUIProperties.tags.extend([Tags.CLASSIFICATION, Tags.CLASSIFIER, Tags.ZERO_SHOT])
+if GroundingDINOClassificationUIProperties.tags is not None:
+    GroundingDINOClassificationUIProperties.tags.extend([Tags.CLASSIFICATION, Tags.CLASSIFIER, Tags.ZERO_SHOT])
 
 
 class GroundingDINOClassificationAttributes(GroundingBaseAttributes):
@@ -61,6 +62,7 @@ class GroundingDINOClassification(GroundingDINO):
 
     AttributesBaseModel = GroundingDINOClassificationAttributes
     UIProperties = GroundingDINOClassificationUIProperties
+    attributes: GroundingDINOClassificationAttributes
 
     def validate_and_format_text_input(self, text_input: str) -> str:
         """Validates and formats the text input for consistency.
@@ -82,9 +84,11 @@ class GroundingDINOClassification(GroundingDINO):
         Returns:
             list[str]: List of processed class names.
         """
-        with open(self.attributes.classes_file, "r", encoding="utf-8") as f:
-            classes = [line.strip() for line in f.readlines() if line.strip()]
-        return self._format_classes_with_limit(classes)
+        if self.attributes.classes_file is not None:
+            with open(self.attributes.classes_file, "r", encoding="utf-8") as f:
+                classes = [line.strip() for line in f.readlines() if line.strip()]
+            return self._format_classes_with_limit(classes)
+        return []
 
     def _format_classes_with_limit(self, classes: list[str]) -> list[str]:
         """Format classes while respecting token limit.

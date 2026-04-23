@@ -15,7 +15,8 @@ from sinapsis_huggingface_transformers.templates.base_transformers import (
 
 SummarizationTransformersUIProperties = TransformersBase.UIProperties
 SummarizationTransformersUIProperties.output_type = OutputTypes.TEXT
-SummarizationTransformersUIProperties.tags.extend([Tags.SUMMARIZATION, Tags.TEXT])
+if SummarizationTransformersUIProperties.tags is not None:
+    SummarizationTransformersUIProperties.tags.extend([Tags.SUMMARIZATION, Tags.TEXT])
 
 
 class SummarizationInferenceKwargs(BaseInferenceKwargs):
@@ -80,6 +81,7 @@ class SummarizationTransformers(TransformersBase):
     AttributesBaseModel = SummarizationTransformersAttributes
     SUMMARY_TEXT_KEY = "summary_text"
     UIProperties = SummarizationTransformersUIProperties
+    attributes: SummarizationTransformersAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.

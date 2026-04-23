@@ -15,9 +15,10 @@ from sinapsis_huggingface_transformers.templates.base_transformers import (
 
 SpeechToTextTransformersUIProperties = TransformersBase.UIProperties
 SpeechToTextTransformersUIProperties.output_type = OutputTypes.TEXT
-SpeechToTextTransformersUIProperties.tags.extend(
-    [Tags.SPEECH, Tags.SPEECH_TO_TEXT, Tags.AUDIO, Tags.SPEECH_RECOGNITION, Tags.TEXT]
-)
+if SpeechToTextTransformersUIProperties.tags is not None:
+    SpeechToTextTransformersUIProperties.tags.extend(
+        [Tags.SPEECH, Tags.SPEECH_TO_TEXT, Tags.AUDIO, Tags.SPEECH_RECOGNITION, Tags.TEXT]
+    )
 
 
 class SpeechToTextInferenceKwargs(BaseInferenceKwargs):
@@ -74,6 +75,7 @@ class SpeechToTextTransformers(TransformersBase):
     AttributesBaseModel = SpeechToTextTransformersAttributes
     TEXT_KEY = "text"
     UIProperties = SpeechToTextTransformersUIProperties
+    attributes: SpeechToTextTransformersAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.

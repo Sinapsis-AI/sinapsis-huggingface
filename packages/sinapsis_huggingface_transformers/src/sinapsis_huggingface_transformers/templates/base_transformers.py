@@ -66,6 +66,7 @@ class TransformersBaseAttributes(TemplateAttributes):
     seed: int | None = None
     pipeline_kwargs: PipelineKwargs = Field(default_factory=PipelineKwargs)
     inference_kwargs: BaseInferenceKwargs = Field(default_factory=BaseInferenceKwargs)
+    torch_dtype: Literal["float16", "float32"] = "float16"
 
 
 class TransformersBase(Template):
@@ -81,6 +82,7 @@ class TransformersBase(Template):
         category="Transformers",
         tags=[Tags.HUGGINGFACE, Tags.TRANSFORMERS, Tags.MODELS],
     )
+    attributes: TransformersBaseAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -141,10 +143,11 @@ class TransformersBase(Template):
             pipeline: Hugging Face Transformers pipeline initialized with the
                       provided model and configuration.
         """
-        return pipeline(
+        pipeline_kwargs = self.attributes.pipeline_kwargs.model_dump()
+        return pipeline(  # ty: ignore[no-matching-overload]
             task=self.task,
             model=self.attributes.model_path,
-            **self.attributes.pipeline_kwargs.model_dump(),
+            **pipeline_kwargs,
             **kwargs,
         )
 
@@ -184,7 +187,7 @@ class TransformersBase(Template):
 
         if hasattr(self, "pipeline") and self.pipeline is not None:
             if self.pipeline.model is not None:
-                self.pipeline.model.to("cpu")
+                self.pipeline.model.to("cpu")  # ty: ignore[invalid-argument-type]
             del self.pipeline
 
         if hasattr(self, "processor"):

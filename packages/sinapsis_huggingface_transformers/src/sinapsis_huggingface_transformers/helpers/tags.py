@@ -2,7 +2,7 @@
 from enum import Enum
 
 
-class Tags(Enum):
+class Tags(str, Enum):
     AUDIO = "audio"
     CAPTION_GENERATION = "caption-generation"
     HUGGINGFACE = "huggingface"

@@ -13,7 +13,8 @@ from sinapsis_huggingface_transformers.templates.base_transformers import (
 
 TranslationTransformersUIProperties = TransformersBase.UIProperties
 TranslationTransformersUIProperties.output_type = OutputTypes.TEXT
-TranslationTransformersUIProperties.tags.extend([Tags.LANGUAGE, Tags.TRANSLATION])
+if TranslationTransformersUIProperties.tags is not None:
+    TranslationTransformersUIProperties.tags.extend([Tags.LANGUAGE, Tags.TRANSLATION])
 
 
 class TranslationInferenceKwargs(BaseInferenceKwargs):
@@ -75,6 +76,7 @@ class TranslationTransformers(TransformersBase):
     AttributesBaseModel = TranslationTransformersAttributes
     TRANSLATION_TEXT_KEY = "translation_text"
     UIProperties = TranslationTransformersUIProperties
+    attributes: TranslationTransformersAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.

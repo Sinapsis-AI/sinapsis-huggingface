@@ -49,4 +49,4 @@ def create_demo() -> gr.Blocks:
 
 if __name__ == "__main__":
     demo = create_demo()
-    demo.launch(share=GRADIO_SHARE_APP)
+    demo.launch(share=bool(GRADIO_SHARE_APP))

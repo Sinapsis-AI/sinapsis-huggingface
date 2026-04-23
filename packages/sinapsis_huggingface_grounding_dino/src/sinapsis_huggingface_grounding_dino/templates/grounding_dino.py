@@ -104,6 +104,8 @@ class GroundingDINO(Template):
 
         text_input: str
 
+    attributes: AttributesBaseModel
+
     def __init__(self, attributes: TemplateAttributeType) -> None:
         """Initializes the GroundingDINO class with the provided attributes.
 
@@ -122,7 +124,7 @@ class GroundingDINO(Template):
         self.processor = AutoProcessor.from_pretrained(
             self.attributes.model_path, cache_dir=self.attributes.model_cache_dir
         )
-        self.model = self._set_model().to(self.attributes.device)
+        self.model = self._set_model().to(self.attributes.device)  # ty: ignore[invalid-argument-type]
         self.max_tokens = self.processor.tokenizer.model_max_length
         self.text_input = self.validate_and_format_text_input(self.attributes.text_input)
 

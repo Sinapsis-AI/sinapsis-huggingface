@@ -2,6 +2,6 @@
 from enum import Enum
 
 
-class Tags(Enum):
+class Tags(str, Enum):
     HUGGINGFACE = "huggingface"
     MODELS = "models"

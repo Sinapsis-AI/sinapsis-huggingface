@@ -51,6 +51,7 @@ class PaliGemmaBase(Template):
         tags=[Tags.HUGGINGFACE, Tags.IMAGE, Tags.PALIGEMMA, Tags.MODELS],
     )
     _TORCH_DTYPE: ClassVar[dict[str, Any]] = {"float16": torch.float16, "float32": torch.float32}
+    attributes: PaliGemmaBaseAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -85,7 +86,7 @@ class PaliGemmaBase(Template):
 
         return model
 
-    def _setup_processor(self) -> AutoProcessor:
+    def _setup_processor(self) -> Any:
         """Initialize processor with proper device placement and precision settings.
 
         Handles the loading of processor components, configuring
@@ -121,7 +122,7 @@ class PaliGemmaBase(Template):
         _ = template_name
 
         if hasattr(self, "model"):
-            self.model.to("cpu")
+            self.model.to("cpu")  # ty: ignore[invalid-argument-type]
             del self.model
 
         if hasattr(self, "processor"):

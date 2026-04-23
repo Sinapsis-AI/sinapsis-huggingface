@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import Any
+from typing import Any, cast
 
 import gradio as gr
 from sinapsis.webapp.agent_gradio_helper import (
@@ -9,7 +9,7 @@ from sinapsis.webapp.agent_gradio_helper import (
 )
 from sinapsis_core.agent.agent import Agent
 from sinapsis_core.cli.run_agent_from_config import generic_agent_builder
-from sinapsis_core.data_containers.data_packet import DataContainer
+from sinapsis_core.data_containers.data_packet import DataContainer, ImagePacket
 from sinapsis_core.utils.env_var_keys import AGENT_CONFIG_PATH, GRADIO_SHARE_APP
 
 DEFAULT_CONFIG = "packages/sinapsis_huggingface_diffusers/src/sinapsis_huggingface_diffusers/configs/text_to_image.yml"
@@ -47,8 +47,13 @@ class ImageGenerationApp:
         agent.update_template_attribute(self.text_input_template, "generation_params", new_prompt)
         container = DataContainer()
         output_container = agent(container)
-        if hasattr(output_container, "images") and output_container.images:
-            img = output_container.images[-1].content
+        if (
+            hasattr(output_container, "images")
+            and isinstance(output_container.images, list)
+            and output_container.images
+        ):
+            image_packet = cast(ImagePacket, output_container.images[-1])
+            img = image_packet.content
             return img, None
         return None, "No image generated."
 
@@ -87,4 +92,4 @@ class ImageGenerationApp:
 
 if __name__ == "__main__":
     app = ImageGenerationApp(CONFIG_FILE, TEXT_INPUT_TEMPLATE_NAME)
-    app().launch(share=GRADIO_SHARE_APP)
+    app().launch(share=bool(GRADIO_SHARE_APP))

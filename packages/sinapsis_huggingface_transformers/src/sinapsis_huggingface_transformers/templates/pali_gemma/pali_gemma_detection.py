@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
+from typing import Iterable, cast
 
 from sinapsis_core.data_containers.annotations import ImageAnnotations
 from sinapsis_huggingface_transformers.templates.pali_gemma.pali_gemma_inference import (
@@ -64,6 +65,7 @@ class PaliGemmaDetection(PaliGemmaInference):
 
     AttributesBaseModel = PaliGemmaDetectionAttributes
     KEYS = PaliGemmaDetectionKeys
+    attributes: PaliGemmaDetectionAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.
@@ -117,11 +119,11 @@ class PaliGemmaDetection(PaliGemmaInference):
         """
         annotations = []
         matches = get_matches(caption)
-
+        matches = cast(Iterable, matches)
         for match_coord in matches:
             coords = parse_location_tokens(match_coord, image_shape)
             label = parse_label(match_coord)
-            annotation = self.create_bbox_annotation(coords, label, confidence)
+            annotation = self.create_bbox_annotation(coords.tolist(), label, confidence)
             annotations.append(annotation)
 
         return annotations

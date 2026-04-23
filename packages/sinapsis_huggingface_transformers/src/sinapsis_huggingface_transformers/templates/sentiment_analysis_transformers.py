@@ -13,14 +13,16 @@ from sinapsis_huggingface_transformers.templates.base_transformers import (
 
 TextToSpeechTransformersUIProperties = TransformersBase.UIProperties
 TextToSpeechTransformersUIProperties.output_type = OutputTypes.TEXT
-TextToSpeechTransformersUIProperties.tags.extend([Tags.TEXT, Tags.SENTIMENT_ANALYSIS])
+if TextToSpeechTransformersUIProperties.tags is not None:
+    TextToSpeechTransformersUIProperties.tags.extend([Tags.TEXT, Tags.SENTIMENT_ANALYSIS])
 
 
 class SentimentAnalysisAttributes(TransformersBaseAttributes):
     """Attributes for the SentimentAnalysis template.
 
     Attributes:
-        model_path (Literal[str]): Model from Huggingface hub that accepts sentiment-analysis or zero-short-classification
+        model_path (Literal[str]):
+        Model from Huggingface hub that accepts sentiment-analysis or zero-short-classification
          in the pipeline.
 
          Options for zero-shot-classification:"MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli",
@@ -65,6 +67,7 @@ class SentimentAnalysisTransformers(TransformersBase):
 
     AttributesBaseModel = SentimentAnalysisAttributes
     UIProperties = TextToSpeechTransformersUIProperties
+    attributes: SentimentAnalysisAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.
@@ -91,12 +94,15 @@ class SentimentAnalysisTransformers(TransformersBase):
         sentiments = self.pipeline(text_to_analise, **self.attributes.inference_kwargs.model_dump(exclude_none=True))
         for i, text_packet in enumerate(container.texts):
             if self.attributes.task == "zero-shot-classification":
-                annotations = [TextAnnotations(label=label, confidence_score=score) for label, score in
-                           zip(sentiments[i].get('labels'), sentiments[i].get('scores'))]
+                annotations = [
+                    TextAnnotations(label=label, confidence_score=score)
+                    for label, score in zip(sentiments[i].get("labels"), sentiments[i].get("scores"))
+                ]
 
             else:
-                annotations = [TextAnnotations(label_str=sentiments[i].get("label"),
-                                               confidence_score=sentiments[i].get("score"))]
+                annotations = [
+                    TextAnnotations(label_str=sentiments[i].get("label"), confidence_score=sentiments[i].get("score"))
+                ]
 
             text_packet.annotations.extend(annotations)
         return container

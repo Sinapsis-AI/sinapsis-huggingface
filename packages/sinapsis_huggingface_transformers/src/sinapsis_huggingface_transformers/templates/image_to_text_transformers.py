@@ -17,7 +17,8 @@ from sinapsis_huggingface_transformers.templates.base_transformers import (
 
 ImageToTextTransformersUIProperties = TransformersBase.UIProperties
 ImageToTextTransformersUIProperties.output_type = OutputTypes.TEXT
-ImageToTextTransformersUIProperties.tags.extend([Tags.IMAGE, Tags.TEXT, Tags.IMAGE_TO_TEXT])
+if ImageToTextTransformersUIProperties.tags is not None:
+    ImageToTextTransformersUIProperties.tags.extend([Tags.IMAGE, Tags.TEXT, Tags.IMAGE_TO_TEXT])
 
 
 class ImageToTextInferenceKwargs(BaseInferenceKwargs):
@@ -73,6 +74,7 @@ class ImageToTextTransformers(TransformersBase):
     AttributesBaseModel = ImageToTextTransformersAttributes
     GENERATED_TEXT_KEY = "generated_text"
     UIProperties = ImageToTextTransformersUIProperties
+    attributes: ImageToTextTransformersAttributes
 
     def initialize(self) -> None:
         """Initializes the template's common state for creation or reset.

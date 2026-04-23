@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from llama_index.core.base.embeddings.base import Embedding
-from llama_index.core.schema import TextNode
+from llama_index.core.schema import MetadataMode, TextNode
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from sinapsis_core.data_containers.data_packet import DataContainer
 from sinapsis_core.template_base import Template
@@ -53,6 +53,7 @@ class HuggingFaceEmbeddingExtractor(Template):
         output_type=OutputTypes.TEXT,
         tags=[Tags.TEXT, Tags.EXTRACTOR, Tags.TEXT, Tags.HUGGINGFACE, Tags.MODELS],
     )
+    attributes: HuggingFaceEmbeddingExtractorAttributes
 
     def __init__(self, attributes: TemplateAttributeType) -> None:
         super().__init__(attributes)
@@ -65,7 +66,7 @@ class HuggingFaceEmbeddingExtractor(Template):
             nodes (list[TextNode]): Nodes containing text to embed.
         """
         for node in nodes:
-            node_embedding = self.embed_model.get_text_embedding(node.get_content(metadata_mode="all"))
+            node_embedding = self.embed_model.get_text_embedding(node.get_content(metadata_mode=MetadataMode.ALL))
             node.embedding = node_embedding
 
     def generate_query_embedding(self, query: str) -> Embedding:
