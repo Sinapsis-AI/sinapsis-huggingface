@@ -22,10 +22,12 @@ templates:
     class_name: UltralyticsPredict
     template_input: GroundingDINO
     attributes:
-      model_class: SAM
-      model: sam2_t.pt
-      use_detections_as_sam_prompt: true
-
+      model_class: YOLO
+      model: yolo11n-seg.pt
+      task: segment
+      verbose: 0
+      predict_params:
+        device: cpu
   - template_name: SegmentationMaskDrawer
     class_name: SegmentationMaskDrawer
     template_input: UltralyticsSAM

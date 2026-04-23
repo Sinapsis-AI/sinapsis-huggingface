@@ -28,7 +28,7 @@ templates:
     class_name: ImageToImageDiffusers
     template_input: PadIfNeeded
     attributes:
-      model_path: "Qwen/Qwen-Image-Edit"
+      model_path: stable-diffusion-v1-5/stable-diffusion-v1-5
       device: cuda
       torch_dtype: "float16"
       seed: 42
